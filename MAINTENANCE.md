@@ -7,6 +7,9 @@ terraform-provider-api7/
 ├── main.go                          # Provider 入口
 ├── oapi-codegen.yaml                # 客户端生成配置
 ├── GNUmakefile                      # 构建目标
+├── scripts/
+│   └── extract-openapi.py          # 从完整规范自动提取子集
+├── openapi-subset.yaml              # 自动生成，勿手动修改
 ├── internal/
 │   ├── client/
 │   │   └── client.gen.go           # oapi-codegen 自动生成，勿手动修改
@@ -22,36 +25,36 @@ terraform-provider-api7/
 
 ## 更新 OpenAPI 规范
 
-当 API7 EE 的 OpenAPI 规范发生变更时，需同步更新 `openapi-subset.yaml` 并重新生成客户端。
+当 API7 EE 的 API 发生变更时，只需两步：
 
-**Step 1：查看上游变更**
+**Step 1：在 api7ee-3-control-plane 仓库执行 `make openapi` 生成最新规范**
 
 ```bash
 # 在 api7ee-3-control-plane 仓库中
-git diff openapi/routers/consumer.yaml
-git diff openapi/schemas/service.yaml
-git diff openapi/schemas/route.yaml
+make openapi
 ```
 
-**Step 2：更新 `openapi-subset.yaml`**
-
-该文件是从完整规范手动裁剪的子集，仅包含 Provider 用到的 8 条路径。按实际变更同步对应的 request/response schema。
-
-> 完整规范位于 `internal/pkg/consts/manifests/openapi.generated.yaml`（执行 `make openapi` 后生成）。
-
-**Step 3：重新生成客户端**
+**Step 2：在本仓库重新生成客户端**
 
 ```bash
+# 默认从 ../api7ee-3-control-plane 读取规范
 make generate
+
+# 如果仓库路径不同，通过环境变量指定
+API7_SPEC=/path/to/openapi.generated.yaml make generate
 ```
 
-**Step 4：修复编译错误**
+`make generate` 会自动完成：
+1. 从完整规范中提取 Provider 所需的 8 条路径（`scripts/extract-openapi.py`）
+2. 用 oapi-codegen 重新生成 `internal/client/client.gen.go`
+
+**Step 3：修复编译错误（如有）**
 
 ```bash
 go build ./...
 ```
 
-常见错误：
+API 变更引起的常见编译错误：
 
 | 错误 | 原因 | 处理方式 |
 |------|------|---------|
@@ -59,13 +62,19 @@ go build ./...
 | `cannot use X as type Y` | 字段类型变更 | 调整 resource 文件中的类型转换 |
 | `apiResp.JSON200.Value.XxxField undefined` | 响应结构变更 | 更新 `build*ModelFromResponse` 函数 |
 
-**Step 5：验证**
+**Step 4：验证**
 
 ```bash
-go build ./...
 make install
-cd examples/provider && terraform plan
+cd examples/quickstart && terraform plan
 ```
+
+---
+
+## 新增资源支持的 Operation
+
+`scripts/extract-openapi.py` 中的 `OPERATION_IDS` 集合控制哪些 operation 会被提取进 subset。
+新增资源时，在该集合里加入对应的 operation ID，再重新 `make generate` 即可。
 
 ---
 
@@ -82,6 +91,8 @@ cd examples/provider && terraform plan
     Description: "Upstream 超时时间（秒）。",
 },
 ```
+
+> 注意：`Computed: true` 仅适用于服务端会自动填充的字段。纯用户管理的字段（如 `labels`）不要加 `Computed`，否则删除时 Terraform 不会产生 diff。
 
 **2. Model struct 中加字段**：
 
@@ -115,7 +126,7 @@ if v, ok := m["timeout"].(float64); ok {
 以新增 `api7_ssl` 为例：
 
 ```bash
-# 1. 在 openapi-subset.yaml 中添加 SSL 相关路径
+# 1. 在 scripts/extract-openapi.py 的 OPERATION_IDS 中加入 SSL 相关 operation ID
 # 2. 重新生成客户端
 make generate
 

@@ -7,6 +7,9 @@ OS_ARCH      = $(shell go env GOOS)_$(shell go env GOARCH)
 
 INSTALL_DIR  = ~/.terraform.d/plugins/$(HOSTNAME)/$(NAMESPACE)/$(NAME)/$(VERSION)/$(OS_ARCH)
 
+# 完整 OpenAPI 规范路径（可通过环境变量覆盖）
+API7_SPEC    ?= ../api7ee-3-control-plane/internal/pkg/consts/manifests/openapi.generated.yaml
+
 default: build
 
 .PHONY: build
@@ -20,7 +23,8 @@ install: build
 
 .PHONY: generate
 generate:
-	oapi-codegen --config oapi-codegen.yaml ../openapi-subset.yaml
+	python3 scripts/extract-openapi.py --spec $(API7_SPEC) --out openapi-subset.yaml
+	oapi-codegen --config oapi-codegen.yaml openapi-subset.yaml
 
 .PHONY: fmt
 fmt:
