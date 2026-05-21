@@ -2,10 +2,10 @@
 terraform-provider-api7
 
 # Terraform local state and cache
-examples/.terraform/
-examples/terraform.tfstate
-examples/terraform.tfstate.backup
-examples/.terraform.lock.hcl
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.backup
+**/.terraform.lock.hcl
 
 # Go
 *.test

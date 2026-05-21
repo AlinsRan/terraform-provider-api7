@@ -1,6 +1,6 @@
-resource "api7_service" "httpbin" {
+resource "api7_service" "example" {
   name = "httpbin"
-  desc = "HTTPBin service for testing"
+  desc = "HTTPBin service"
 
   upstream = {
     nodes = [
@@ -13,8 +13,4 @@ resource "api7_service" "httpbin" {
     scheme = "http"
     type   = "roundrobin"
   }
-}
-
-output "service_id" {
-  value = api7_service.httpbin.id
 }
