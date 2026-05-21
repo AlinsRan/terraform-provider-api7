@@ -15,7 +15,7 @@ resource "api7_consumer" "example" {
 
 ### Required
 
-- `username` (String) — Unique consumer name.
+- `username` (String) — Unique consumer name. Changing this forces a new resource.
 
 ### Optional
 
@@ -25,3 +25,13 @@ resource "api7_consumer" "example" {
 ### Read-Only
 
 - `id` (String) — Consumer identifier (same as `username`).
+
+## Import
+
+```bash
+terraform import api7_consumer.<name> <username>
+```
+
+## Known Limitations
+
+Authentication plugins (e.g. `key-auth`, `jwt-auth`) cannot be set directly on the consumer's `plugins` field in API7 EE. They must be managed through the Credential sub-resource in the Dashboard.
