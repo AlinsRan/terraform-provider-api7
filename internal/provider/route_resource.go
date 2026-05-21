@@ -24,12 +24,13 @@ type RouteResource struct {
 }
 
 type RouteResourceModel struct {
-	ID        types.String         `tfsdk:"id"`
-	Name      types.String         `tfsdk:"name"`
-	ServiceID types.String         `tfsdk:"service_id"`
-	Paths     []types.String       `tfsdk:"paths"`
-	Methods   []types.String       `tfsdk:"methods"`
-	Plugins   jsontypes.Normalized `tfsdk:"plugins"`
+	ID        types.String            `tfsdk:"id"`
+	Name      types.String            `tfsdk:"name"`
+	ServiceID types.String            `tfsdk:"service_id"`
+	Paths     []types.String          `tfsdk:"paths"`
+	Methods   []types.String          `tfsdk:"methods"`
+	Labels    map[string]types.String `tfsdk:"labels"`
+	Plugins   jsontypes.Normalized    `tfsdk:"plugins"`
 }
 
 func NewRouteResource() resource.Resource {
@@ -78,6 +79,11 @@ func (r *RouteResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 				Computed:    true,
 				Description: "Plugin configuration as JSON string.",
 				CustomType:  jsontypes.NormalizedType{},
+			},
+			"labels": schema.MapAttribute{
+				Optional:    true,
+				ElementType: types.StringType,
+				Description: "Key-value label pairs attached to the route.",
 			},
 		},
 	}
@@ -230,6 +236,12 @@ func routeModelToCreateRequest(m RouteResourceModel) client.CreatePublishedServi
 		body.Plugins = &plugins
 	}
 
+	labels := make(map[string]string, len(m.Labels))
+	for k, v := range m.Labels {
+		labels[k] = v.ValueString()
+	}
+	body.Labels = &labels
+
 	return body
 }
 
@@ -259,6 +271,12 @@ func routeModelToPutRequest(m RouteResourceModel) client.PutPublishedServiceRout
 		_ = json.Unmarshal([]byte(m.Plugins.ValueString()), &plugins)
 		body.Plugins = &plugins
 	}
+
+	labels := make(map[string]string, len(m.Labels))
+	for k, v := range m.Labels {
+		labels[k] = v.ValueString()
+	}
+	body.Labels = &labels
 
 	return body
 }
@@ -302,6 +320,15 @@ func buildRouteModelFromResponse(val interface{}) RouteResourceModel {
 	if pluginsRaw, ok := m["plugins"]; ok && pluginsRaw != nil {
 		b, _ := json.Marshal(pluginsRaw)
 		state.Plugins = jsontypes.NewNormalizedValue(string(b))
+	}
+
+	if labelsRaw, ok := m["labels"].(map[string]interface{}); ok && len(labelsRaw) > 0 {
+		state.Labels = make(map[string]types.String, len(labelsRaw))
+		for k, v := range labelsRaw {
+			if s, ok := v.(string); ok {
+				state.Labels[k] = types.StringValue(s)
+			}
+		}
 	}
 
 	return state
