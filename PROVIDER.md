@@ -1,8 +1,6 @@
-# API7 Provider
+# Provider 配置
 
-The API7 provider manages resources in [API7 Enterprise Edition](https://api7.ai).
-
-## Example Usage
+## 示例
 
 ```terraform
 provider "api7" {
@@ -18,25 +16,25 @@ variable "api7_api_key" {
 }
 ```
 
-## Schema
+## 参数说明
 
-| Argument | Type | Required | Description |
-|----------|------|----------|-------------|
-| `endpoint` | string | ✅ | API7 EE control plane address, e.g. `https://127.0.0.1:7443`. |
-| `api_key` | string (sensitive) | ✅ | API token sent as `X-API-KEY`. |
-| `gateway_group_id` | string | ✅ | Gateway Group ID shared by all resources in this workspace. |
-| `insecure` | bool | ❌ | Skip TLS certificate verification. For local/test environments only. |
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `endpoint` | string | ✅ | API7 EE 控制面地址，如 `https://127.0.0.1:7443` |
+| `api_key` | string（敏感） | ✅ | API Token，通过 `X-API-KEY` 头传递 |
+| `gateway_group_id` | string | ✅ | Gateway Group ID，当前 workspace 下所有资源共用 |
+| `insecure` | bool | ❌ | 跳过 TLS 证书验证，仅用于本地/测试环境 |
 
-## Obtaining an API Token
+## 获取 API Token
 
-API7 EE's root (`admin`) user cannot create tokens via API. Use one of:
+API7 EE 的 root（admin）用户无法通过 API 创建 Token，可通过以下方式获取：
 
-**Option A (recommended):** Dashboard → Profile → Tokens (log in as a non-root user).
+**方式 A（推荐）**：使用非 root 用户登录 Dashboard → 个人设置 → Token 中创建。
 
-**Option B (dev/test only):** Insert directly into PostgreSQL:
+**方式 B（开发/测试环境）**：直接写入 PostgreSQL：
 
 ```bash
-# 1. Generate token hash
+# 1. 生成 token 及哈希
 python3 -c "
 import hashlib, base64, secrets, uuid
 token_id = str(uuid.uuid4())
@@ -51,7 +49,7 @@ print(f'Salt     : {salt}')
 print(f'Hashed   : {base64.b64encode(hashed).decode()}')
 "
 
-# 2. Write to DB
+# 2. 写入数据库（替换下方占位符）
 docker exec api7-ee-postgresql-1 env PGPASSWORD=changeme psql -U api7ee -c "
 INSERT INTO tokens (id, name, token, salt, org_id, user_id, expires_at, created_at, updated_at)
 VALUES (

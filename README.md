@@ -1,22 +1,22 @@
 # terraform-provider-api7
 
-Terraform Provider for [API7 Enterprise](https://api7.ai), built with [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) + [terraform-plugin-framework](https://github.com/hashicorp/terraform-plugin-framework).
+基于 [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen) + [terraform-plugin-framework](https://github.com/hashicorp/terraform-plugin-framework) 构建的 [API7 Enterprise](https://api7.ai) Terraform Provider。
 
-## Supported Resources
+## 支持的资源
 
-| Resource | Create | Read | Update | Delete | Import |
-|----------|--------|------|--------|--------|--------|
+| 资源 | Create | Read | Update | Delete | Import |
+|------|--------|------|--------|--------|--------|
 | `api7_consumer` | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `api7_service`  | ✅ | ✅ | ✅ | ✅ | ✅ |
 | `api7_route`    | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-## Requirements
+## 环境要求
 
 - Terraform >= 1.0
-- Go >= 1.21 (build only)
+- Go >= 1.21（仅构建时需要）
 - API7 Enterprise 3.x
 
-## Quick Start
+## 快速开始
 
 ```bash
 git clone https://github.com/AlinsRan/terraform-provider-api7.git
@@ -24,7 +24,7 @@ cd terraform-provider-api7
 make install
 ```
 
-Then configure `~/.terraformrc` to use the local mirror:
+配置 `~/.terraformrc` 使用本地 mirror：
 
 ```hcl
 provider_installation {
@@ -38,12 +38,12 @@ provider_installation {
 }
 ```
 
-See [`examples/provider/provider.tf`](examples/provider/provider.tf) for a minimal provider configuration.
+使用示例见 [`examples/provider/provider.tf`](examples/provider/provider.tf)。
 
-## Documentation
+## 文档
 
-- [Provider configuration](docs/index.md)
-- [api7_consumer](docs/resources/consumer.md)
-- [api7_service](docs/resources/service.md)
-- [api7_route](docs/resources/route.md)
-- [Maintenance guide](docs/guides/maintenance.md)
+- [Provider 配置](PROVIDER.md)
+- [api7_consumer](CONSUMER.md)
+- [api7_service](SERVICE.md)
+- [api7_route](ROUTE.md)
+- [维护指南](MAINTENANCE.md)
