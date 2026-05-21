@@ -43,7 +43,8 @@ provider_installation {
 ## 文档
 
 - [Provider 配置](PROVIDER.md)
-- [api7_consumer](CONSUMER.md)
-- [api7_service](SERVICE.md)
-- [api7_route](ROUTE.md)
 - [维护指南](MAINTENANCE.md)
+
+## 示例
+
+- [快速开始](examples/quickstart/README.md) — 创建 Consumer、Service、Route 的完整示例
