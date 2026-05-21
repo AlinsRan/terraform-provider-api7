@@ -1,0 +1,10 @@
+package: client
+generate:
+  client: true
+  models: true
+  embedded-spec: false
+output: internal/client/client.gen.go
+import-mapping: {}
+output-options:
+  skip-prune: false
+  user-templates: {}

@@ -1,0 +1,11 @@
+# Build output
+terraform-provider-api7
+
+# Terraform local state and cache
+examples/.terraform/
+examples/terraform.tfstate
+examples/terraform.tfstate.backup
+examples/.terraform.lock.hcl
+
+# Go
+*.test
