@@ -1,0 +1,55 @@
+provider:
+  name: api7
+
+resources:
+  service:
+    create:
+      path: /apisix/admin/services
+      method: POST
+    read:
+      path: /apisix/admin/services/{service_id}
+      method: GET
+    update:
+      path: /apisix/admin/services/{service_id}
+      method: PUT
+    delete:
+      path: /apisix/admin/services/{service_id}
+      method: DELETE
+    schema:
+      attributes:
+        aliases:
+          service_id: id
+
+  route:
+    create:
+      path: /apisix/admin/routes
+      method: POST
+    read:
+      path: /apisix/admin/routes/{route_id}
+      method: GET
+    update:
+      path: /apisix/admin/routes/{route_id}
+      method: PUT
+    delete:
+      path: /apisix/admin/routes/{route_id}
+      method: DELETE
+    schema:
+      ignores:
+        - vars
+      attributes:
+        aliases:
+          route_id: id
+
+  consumer:
+    create:
+      path: /apisix/admin/consumers
+      method: POST
+    read:
+      path: /apisix/admin/consumers/{username}
+      method: GET
+    update:
+      path: /apisix/admin/consumers/{username}
+      method: PUT
+    delete:
+      path: /apisix/admin/consumers/{username}
+      method: DELETE

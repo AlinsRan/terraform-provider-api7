@@ -1,0 +1,1657 @@
+{
+	"provider": {
+		"name": "api7"
+	},
+	"resources": [
+		{
+			"name": "consumer",
+			"schema": {
+				"attributes": [
+					{
+						"name": "desc",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The object description.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthAtMost(65536)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "labels",
+						"map": {
+							"computed_optional_required": "computed_optional",
+							"element_type": {
+								"string": {}
+							},
+							"description": "Key-value pairs of labels."
+						}
+					},
+					{
+						"name": "plugins",
+						"single_nested": {
+							"computed_optional_required": "computed_optional",
+							"description": "Key-value pairs of plugins and their configurations on the object."
+						}
+					},
+					{
+						"name": "username",
+						"string": {
+							"computed_optional_required": "required",
+							"description": "The unique identifier of the consumer.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 512)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "regexp"
+											},
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-zA-Z0-9_\\\\-]+$\"), \"\")"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "value",
+						"single_nested": {
+							"computed_optional_required": "computed",
+							"attributes": [
+								{
+									"name": "created_at",
+									"int64": {
+										"computed_optional_required": "computed",
+										"description": "The object created timestamp."
+									}
+								},
+								{
+									"name": "desc",
+									"string": {
+										"computed_optional_required": "computed",
+										"description": "The object description."
+									}
+								},
+								{
+									"name": "labels",
+									"map": {
+										"computed_optional_required": "computed",
+										"element_type": {
+											"string": {}
+										},
+										"description": "Key-value pairs of labels."
+									}
+								},
+								{
+									"name": "plugins",
+									"single_nested": {
+										"computed_optional_required": "computed",
+										"description": "Key-value pairs of plugins and their configurations on the object."
+									}
+								},
+								{
+									"name": "updated_at",
+									"int64": {
+										"computed_optional_required": "computed",
+										"description": "The object updated timestamp."
+									}
+								},
+								{
+									"name": "username",
+									"string": {
+										"computed_optional_required": "computed",
+										"description": "The unique identifier of the consumer."
+									}
+								}
+							],
+							"description": "The consumer with management fields."
+						}
+					},
+					{
+						"name": "gateway_group_id",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "Gateway group ID. Optional when using the gateway group admin key to authenticate."
+						}
+					}
+				]
+			}
+		},
+		{
+			"name": "route",
+			"schema": {
+				"attributes": [
+					{
+						"name": "desc",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The object description.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthAtMost(65536)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "enable_websocket",
+						"bool": {
+							"computed_optional_required": "computed_optional",
+							"description": "If true, enable Websocket proxying for the route."
+						}
+					},
+					{
+						"name": "labels",
+						"map": {
+							"computed_optional_required": "computed_optional",
+							"element_type": {
+								"string": {}
+							},
+							"description": "Key-value pairs of labels."
+						}
+					},
+					{
+						"name": "methods",
+						"list": {
+							"computed_optional_required": "computed_optional",
+							"element_type": {
+								"string": {}
+							},
+							"description": "The allowed HTTP methods to access the route. If empty, all HTTP methods are allowed.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+											}
+										],
+										"schema_definition": "listvalidator.SizeBetween(1, 9)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+											}
+										],
+										"schema_definition": "listvalidator.UniqueValues()"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "name",
+						"string": {
+							"computed_optional_required": "required",
+							"description": "The object name.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 65536)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "paths",
+						"list": {
+							"computed_optional_required": "required",
+							"element_type": {
+								"string": {}
+							},
+							"description": "The URL path(s) (after the service's `path_prefix`) that the route will listen to. Each path should start with a `/`.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+											}
+										],
+										"schema_definition": "listvalidator.SizeBetween(1, 64)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "plugins",
+						"single_nested": {
+							"computed_optional_required": "computed_optional",
+							"description": "Key-value pairs of plugins and their configurations on the object."
+						}
+					},
+					{
+						"name": "priority",
+						"int64": {
+							"computed_optional_required": "computed_optional",
+							"default": {
+								"static": 0
+							},
+							"description": "Priority of the route. A higher value corresponds to a higher priority. If different Routes matches to the same URI, then the Route with the highest priority will be matched."
+						}
+					},
+					{
+						"name": "service_id",
+						"string": {
+							"computed_optional_required": "required",
+							"description": "The service ID.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 256)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "regexp"
+											},
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-zA-Z0-9-_.]+$\"), \"\")"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "timeout",
+						"single_nested": {
+							"computed_optional_required": "computed_optional",
+							"attributes": [
+								{
+									"name": "connect",
+									"int64": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": 60
+										},
+										"description": "Connection timeout in seconds.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+														}
+													],
+													"schema_definition": "int64validator.AtLeast(0)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "read",
+									"int64": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": 60
+										},
+										"description": "Receiving timeout in seconds.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+														}
+													],
+													"schema_definition": "int64validator.AtLeast(0)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "send",
+									"int64": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": 60
+										},
+										"description": "Sending timeout in seconds.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+														}
+													],
+													"schema_definition": "int64validator.AtLeast(0)"
+												}
+											}
+										]
+									}
+								}
+							],
+							"description": "Timeout settings for connecting to, sending, and receiving messages from the upstream, in seconds."
+						}
+					},
+					{
+						"name": "id",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The unique identifier of the published route.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 256)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "regexp"
+											},
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-zA-Z0-9-_.]+$\"), \"\")"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "gateway_group_id",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "Gateway group ID. Optional when using the gateway group admin key to authenticate."
+						}
+					},
+					{
+						"name": "with_publish_info",
+						"bool": {
+							"computed_optional_required": "computed_optional",
+							"default": {
+								"static": false
+							},
+							"description": "If true, include publish information in the response, such as `apisix_route_id`, `route_version_id`, and `service_version_id`. The additional information is only useful for the Dashboard and not for API users."
+						}
+					}
+				]
+			}
+		},
+		{
+			"name": "service",
+			"schema": {
+				"attributes": [
+					{
+						"name": "desc",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The object description.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthAtMost(65536)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "hosts",
+						"list": {
+							"computed_optional_required": "computed_optional",
+							"element_type": {
+								"string": {}
+							},
+							"description": "The hosts of the service to accept incoming requests.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+											}
+										],
+										"schema_definition": "listvalidator.SizeBetween(1, 32)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+											}
+										],
+										"schema_definition": "listvalidator.UniqueValues()"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "labels",
+						"map": {
+							"computed_optional_required": "computed_optional",
+							"element_type": {
+								"string": {}
+							},
+							"description": "Key-value pairs of labels."
+						}
+					},
+					{
+						"name": "name",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The object name.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 65536)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "path_prefix",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The listening path prefix of the service.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 4096)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "regexp"
+											},
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^/\"), \"\")"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "plugins",
+						"single_nested": {
+							"computed_optional_required": "computed_optional",
+							"description": "Key-value pairs of plugins and their configurations on the object."
+						}
+					},
+					{
+						"name": "status",
+						"int64": {
+							"computed_optional_required": "computed_optional",
+							"default": {
+								"static": 1
+							},
+							"description": "The object status. 1 means the object is active while 0 means it's inactive.\n",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+											}
+										],
+										"schema_definition": "int64validator.OneOf(\n0,\n1,\n)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "strip_path_prefix",
+						"bool": {
+							"computed_optional_required": "computed_optional",
+							"default": {
+								"static": true
+							},
+							"description": "If true, strip the path prefix when proxying the request to the upstream."
+						}
+					},
+					{
+						"name": "type",
+						"string": {
+							"computed_optional_required": "required",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.OneOf(\n\"http\",\n)"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "upstream",
+						"single_nested": {
+							"computed_optional_required": "computed_optional",
+							"attributes": [
+								{
+									"name": "ca_certificates",
+									"list": {
+										"computed_optional_required": "computed_optional",
+										"element_type": {
+											"string": {}
+										},
+										"description": "CA certificates."
+									}
+								},
+								{
+									"name": "checks",
+									"single_nested": {
+										"computed_optional_required": "computed_optional",
+										"attributes": [
+											{
+												"name": "active",
+												"single_nested": {
+													"computed_optional_required": "required",
+													"attributes": [
+														{
+															"name": "concurrency",
+															"int64": {
+																"computed_optional_required": "computed_optional",
+																"default": {
+																	"static": 10
+																},
+																"description": "The number of targets to be checked at the same time during the active check."
+															}
+														},
+														{
+															"name": "healthy",
+															"single_nested": {
+																"computed_optional_required": "computed_optional",
+																"attributes": [
+																	{
+																		"name": "http_statuses",
+																		"list": {
+																			"computed_optional_required": "computed_optional",
+																			"element_type": {
+																				"int64": {}
+																			},
+																			"description": "A list of HTTP response status codes which are considered healthy.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+																							}
+																						],
+																						"schema_definition": "listvalidator.SizeAtLeast(1)"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "interval",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 1
+																			},
+																			"description": "Time interval of checking healthy targets in seconds.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.AtLeast(1)"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "successes",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 2
+																			},
+																			"description": "The number of successful probes to define a healthy target.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.AtLeast(1)"
+																					}
+																				}
+																			]
+																		}
+																	}
+																],
+																"description": "Active health check healthy configurations."
+															}
+														},
+														{
+															"name": "host",
+															"string": {
+																"computed_optional_required": "computed_optional",
+																"description": "The HTTP host.",
+																"validators": [
+																	{
+																		"custom": {
+																			"imports": [
+																				{
+																					"path": "regexp"
+																				},
+																				{
+																					"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+																				}
+																			],
+																			"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^\\\\*?[0-9a-zA-Z-._]+$\"), \"\")"
+																		}
+																	}
+																]
+															}
+														},
+														{
+															"name": "http_path",
+															"string": {
+																"computed_optional_required": "computed_optional",
+																"default": {
+																	"static": "/"
+																},
+																"description": "The HTTP path in HTTP probe requests."
+															}
+														},
+														{
+															"name": "https_verify_certificate",
+															"bool": {
+																"computed_optional_required": "computed_optional",
+																"default": {
+																	"static": true
+																},
+																"description": "Whether to verify the target's TLS certificate."
+															}
+														},
+														{
+															"name": "port",
+															"int64": {
+																"computed_optional_required": "computed_optional",
+																"description": "By default, the port is the same as the one defined in the upstream target.",
+																"validators": [
+																	{
+																		"custom": {
+																			"imports": [
+																				{
+																					"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																				}
+																			],
+																			"schema_definition": "int64validator.Between(1, 65535)"
+																		}
+																	}
+																]
+															}
+														},
+														{
+															"name": "req_headers",
+															"list": {
+																"computed_optional_required": "computed_optional",
+																"element_type": {
+																	"string": {}
+																},
+																"description": "The request headers.",
+																"validators": [
+																	{
+																		"custom": {
+																			"imports": [
+																				{
+																					"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+																				}
+																			],
+																			"schema_definition": "listvalidator.SizeAtLeast(1)"
+																		}
+																	},
+																	{
+																		"custom": {
+																			"imports": [
+																				{
+																					"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+																				}
+																			],
+																			"schema_definition": "listvalidator.UniqueValues()"
+																		}
+																	}
+																]
+															}
+														},
+														{
+															"name": "timeout",
+															"float64": {
+																"computed_optional_required": "computed_optional",
+																"default": {
+																	"static": 1
+																},
+																"description": "Active check timeout in seconds."
+															}
+														},
+														{
+															"name": "type",
+															"string": {
+																"computed_optional_required": "computed_optional",
+																"default": {
+																	"static": "http"
+																},
+																"description": "Active check probing type.",
+																"validators": [
+																	{
+																		"custom": {
+																			"imports": [
+																				{
+																					"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+																				}
+																			],
+																			"schema_definition": "stringvalidator.OneOf(\n\"http\",\n\"https\",\n\"tcp\",\n)"
+																		}
+																	}
+																]
+															}
+														},
+														{
+															"name": "unhealthy",
+															"single_nested": {
+																"computed_optional_required": "computed_optional",
+																"attributes": [
+																	{
+																		"name": "http_failures",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 5
+																			},
+																			"description": "The number of HTTP-related failures to define an unhealthy target.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.Between(1, 254)"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "http_statuses",
+																		"list": {
+																			"computed_optional_required": "computed_optional",
+																			"element_type": {
+																				"int64": {}
+																			},
+																			"description": "A list of HTTP response status codes which are considered unhealthy.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+																							}
+																						],
+																						"schema_definition": "listvalidator.SizeAtLeast(1)"
+																					}
+																				},
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
+																							}
+																						],
+																						"schema_definition": "listvalidator.UniqueValues()"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "interval",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 1
+																			},
+																			"description": "Time interval of checking unhealthy targets in seconds.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.AtLeast(1)"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "tcp_failures",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 2
+																			},
+																			"description": "The number of TCP-related failures to define an unhealthy target.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.Between(1, 254)"
+																					}
+																				}
+																			]
+																		}
+																	},
+																	{
+																		"name": "timeouts",
+																		"int64": {
+																			"computed_optional_required": "computed_optional",
+																			"default": {
+																				"static": 3
+																			},
+																			"description": "The number of probe timeouts to define an unhealthy target.",
+																			"validators": [
+																				{
+																					"custom": {
+																						"imports": [
+																							{
+																								"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																							}
+																						],
+																						"schema_definition": "int64validator.Between(1, 254)"
+																					}
+																				}
+																			]
+																		}
+																	}
+																],
+																"description": "Active health check unhealthy configurations."
+															}
+														}
+													],
+													"description": "Active health check configurations."
+												}
+											}
+										],
+										"description": "Health check configurations."
+									}
+								},
+								{
+									"name": "client_certificate",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "The object ID.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.LengthBetween(1, 256)"
+												}
+											},
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "regexp"
+														},
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-zA-Z0-9-_.]+$\"), \"\")"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "desc",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "The object description.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.LengthAtMost(65536)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "discovery_args",
+									"single_nested": {
+										"computed_optional_required": "computed_optional",
+										"attributes": [
+											{
+												"name": "metadata",
+												"map": {
+													"computed_optional_required": "computed_optional",
+													"element_type": {
+														"string": {}
+													}
+												}
+											}
+										],
+										"description": "Service discovery arguments. Only valid for service discovery."
+									}
+								},
+								{
+									"name": "discovery_type",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "Type of service discovery. Only valid for service discovery.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.OneOf(\n\"kubernetes\",\n\"nacos\",\n\"consul\",\n)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "hash_on",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": "vars"
+										},
+										"description": "Type of value to hash on when `type` is `chash`.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.OneOf(\n\"vars\",\n\"header\",\n\"cookie\",\n\"consumer\",\n\"vars_combinations\",\n)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "keepalive_pool",
+									"single_nested": {
+										"computed_optional_required": "computed_optional",
+										"attributes": [
+											{
+												"name": "idle_timeout",
+												"float64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 60
+													},
+													"description": "Time an idle keepalive connection remains open before being closed, in seconds."
+												}
+											},
+											{
+												"name": "requests",
+												"int64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 1000
+													},
+													"description": "The number of requests a single keepalive connection can handle before closing.",
+													"validators": [
+														{
+															"custom": {
+																"imports": [
+																	{
+																		"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																	}
+																],
+																"schema_definition": "int64validator.AtLeast(1)"
+															}
+														}
+													]
+												}
+											},
+											{
+												"name": "size",
+												"int64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 320
+													},
+													"description": "The number of idle keepalive connections per worker to upstream servers.",
+													"validators": [
+														{
+															"custom": {
+																"imports": [
+																	{
+																		"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																	}
+																],
+																"schema_definition": "int64validator.AtLeast(1)"
+															}
+														}
+													]
+												}
+											}
+										],
+										"description": "Upstream keepalive connection pool."
+									}
+								},
+								{
+									"name": "key",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "The `key` is used when `type` is `chash`. The corresponding upstream ID is determined based on the `hash_on` and `key` values. - When `hash_on` is set to `vars`, `key` is required and supports [built-in variables](https://docs.api7.ai/enterprise/reference/built-in-variables). - When `hash_on` is set to `vars_combinations`, `key` is required and supports a combination of [built-in variables](https://docs.api7.ai/enterprise/reference/built-in-variables). - When `hash_on` is set to `header`, `key` is required and should be the name of the header. - When `hash_on` is set to `cookie`, `key` is required and should be the name of the cookie. - When `hash_on` is set to `consumer`, `key` is not required, as the hash algorithm uses the authenticated consumer name.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.LengthAtLeast(1)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "labels",
+									"map": {
+										"computed_optional_required": "computed_optional",
+										"element_type": {
+											"string": {}
+										},
+										"description": "Key-value pairs of labels."
+									}
+								},
+								{
+									"name": "name",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": "default"
+										},
+										"description": "The upstream name.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.LengthBetween(1, 65536)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "nodes",
+									"list_nested": {
+										"computed_optional_required": "required",
+										"nested_object": {
+											"attributes": [
+												{
+													"name": "host",
+													"string": {
+														"computed_optional_required": "required",
+														"description": "Upstream host.",
+														"validators": [
+															{
+																"custom": {
+																	"imports": [
+																		{
+																			"path": "regexp"
+																		},
+																		{
+																			"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+																		}
+																	],
+																	"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^\\\\\\\\*?[0-9a-zA-Z-._]+$\"), \"\")"
+																}
+															}
+														]
+													}
+												},
+												{
+													"name": "port",
+													"int64": {
+														"computed_optional_required": "required",
+														"description": "Upstream port.",
+														"validators": [
+															{
+																"custom": {
+																	"imports": [
+																		{
+																			"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																		}
+																	],
+																	"schema_definition": "int64validator.Between(1, 65535)"
+																}
+															}
+														]
+													}
+												},
+												{
+													"name": "priority",
+													"int64": {
+														"computed_optional_required": "computed_optional",
+														"default": {
+															"static": 0
+														},
+														"description": "Node priority. A higher value corresponds to a higher priority."
+													}
+												},
+												{
+													"name": "weight",
+													"int64": {
+														"computed_optional_required": "required",
+														"description": "Upstream weight.",
+														"validators": [
+															{
+																"custom": {
+																	"imports": [
+																		{
+																			"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																		}
+																	],
+																	"schema_definition": "int64validator.Between(0, 65535)"
+																}
+															}
+														]
+													}
+												}
+											]
+										},
+										"description": "The upstream endpoints."
+									}
+								},
+								{
+									"name": "pass_host",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": "pass"
+										},
+										"description": "The approach to decide the host header before forwarding requests to an upstream.\n* `pass` uses the host specified in the service.\n* `node` uses the host specified in the upstream.\n* `rewrite` uses custom host.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.OneOf(\n\"pass\",\n\"node\",\n\"rewrite\",\n)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "retries",
+									"int64": {
+										"computed_optional_required": "computed_optional",
+										"description": "The number of retries while passing the request to an upstream.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+														}
+													],
+													"schema_definition": "int64validator.Between(0, 65535)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "retry_timeout",
+									"float64": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": 0
+										},
+										"description": "Timeout to continue with retries. Setting this to 0 disables the retry timeout."
+									}
+								},
+								{
+									"name": "scheme",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": "http"
+										},
+										"description": "The protocol that is used for communicating with the backend service when the service type is `http`.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.OneOf(\n\"http\",\n\"https\",\n\"grpc\",\n\"grpcs\",\n)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "service_name",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "Service name in the service registry. Only valid for service discovery.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.LengthBetween(1, 256)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "timeout",
+									"single_nested": {
+										"computed_optional_required": "computed_optional",
+										"attributes": [
+											{
+												"name": "connect",
+												"int64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 60
+													},
+													"description": "Connection timeout in seconds.",
+													"validators": [
+														{
+															"custom": {
+																"imports": [
+																	{
+																		"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																	}
+																],
+																"schema_definition": "int64validator.AtLeast(0)"
+															}
+														}
+													]
+												}
+											},
+											{
+												"name": "read",
+												"int64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 60
+													},
+													"description": "Receiving timeout in seconds.",
+													"validators": [
+														{
+															"custom": {
+																"imports": [
+																	{
+																		"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																	}
+																],
+																"schema_definition": "int64validator.AtLeast(0)"
+															}
+														}
+													]
+												}
+											},
+											{
+												"name": "send",
+												"int64": {
+													"computed_optional_required": "computed_optional",
+													"default": {
+														"static": 60
+													},
+													"description": "Sending timeout in seconds.",
+													"validators": [
+														{
+															"custom": {
+																"imports": [
+																	{
+																		"path": "github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
+																	}
+																],
+																"schema_definition": "int64validator.AtLeast(0)"
+															}
+														}
+													]
+												}
+											}
+										],
+										"description": "Timeout settings for connecting to, sending, and receiving messages from the upstream, in seconds."
+									}
+								},
+								{
+									"name": "tls",
+									"single_nested": {
+										"computed_optional_required": "computed_optional",
+										"attributes": [
+											{
+												"name": "client_cert",
+												"single_nested": {
+													"computed_optional_required": "required",
+													"description": "Certificate."
+												}
+											},
+											{
+												"name": "client_key",
+												"single_nested": {
+													"computed_optional_required": "required",
+													"description": "Private key."
+												}
+											}
+										],
+										"description": "Replace with `client_certificate` and `ca_certificates`"
+									}
+								},
+								{
+									"name": "tls_verify",
+									"bool": {
+										"computed_optional_required": "computed_optional",
+										"description": "If true, verify TLS."
+									}
+								},
+								{
+									"name": "type",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"default": {
+											"static": "roundrobin"
+										},
+										"description": "Load balancing algorithm to distribute traffic.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.OneOf(\n\"chash\",\n\"roundrobin\",\n\"least_conn\",\n\"ewma\",\n)"
+												}
+											}
+										]
+									}
+								},
+								{
+									"name": "upstream_host",
+									"string": {
+										"computed_optional_required": "computed_optional",
+										"description": "Value to rewrite the host header to. Only used if `pass_host` is `rewrite`.",
+										"validators": [
+											{
+												"custom": {
+													"imports": [
+														{
+															"path": "regexp"
+														},
+														{
+															"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+														}
+													],
+													"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^\\\\*?[0-9a-zA-Z-._]+$\"), \"\")"
+												}
+											}
+										]
+									}
+								}
+							],
+							"description": "The upstream contains necessary information for the gateway to proxy\nrequest to the backend service.\n"
+						}
+					},
+					{
+						"name": "value",
+						"single_nested": {
+							"computed_optional_required": "computed",
+							"attributes": [
+								{
+									"name": "created_at",
+									"int64": {
+										"computed_optional_required": "computed",
+										"description": "The object created timestamp."
+									}
+								},
+								{
+									"name": "desc",
+									"string": {
+										"computed_optional_required": "computed",
+										"description": "The object description."
+									}
+								},
+								{
+									"name": "id",
+									"string": {
+										"computed_optional_required": "computed",
+										"description": "The object ID."
+									}
+								},
+								{
+									"name": "labels",
+									"map": {
+										"computed_optional_required": "computed",
+										"element_type": {
+											"string": {}
+										},
+										"description": "Key-value pairs of labels."
+									}
+								},
+								{
+									"name": "last_published",
+									"int64": {
+										"computed_optional_required": "computed",
+										"description": "The object timestamp."
+									}
+								},
+								{
+									"name": "name",
+									"string": {
+										"computed_optional_required": "computed",
+										"description": "The object name."
+									}
+								},
+								{
+									"name": "published_gateway_groups_count",
+									"int64": {
+										"computed_optional_required": "computed"
+									}
+								},
+								{
+									"name": "type",
+									"string": {
+										"computed_optional_required": "computed",
+										"default": {
+											"static": "http"
+										},
+										"description": "Type of service. `http` corresponds to L7 service and `stream` corresponds to L4 service."
+									}
+								},
+								{
+									"name": "updated_at",
+									"int64": {
+										"computed_optional_required": "computed",
+										"description": "The object updated timestamp."
+									}
+								}
+							],
+							"description": "The service with management fields."
+						}
+					},
+					{
+						"name": "id",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "The unique identifier of the published service.",
+							"validators": [
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.LengthBetween(1, 256)"
+									}
+								},
+								{
+									"custom": {
+										"imports": [
+											{
+												"path": "regexp"
+											},
+											{
+												"path": "github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+											}
+										],
+										"schema_definition": "stringvalidator.RegexMatches(regexp.MustCompile(\"^[a-zA-Z0-9-_.]+$\"), \"\")"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "gateway_group_id",
+						"string": {
+							"computed_optional_required": "computed_optional",
+							"description": "Gateway group ID. Optional when using the gateway group admin key to authenticate."
+						}
+					},
+					{
+						"name": "with_publish_info",
+						"bool": {
+							"computed_optional_required": "computed_optional",
+							"default": {
+								"static": false
+							},
+							"description": "If true, include publish information in the response, such as `apisix_route_id`, `route_version_id`, and `service_version_id`. The additional information is only useful for the Dashboard and not for API users."
+						}
+					}
+				]
+			}
+		}
+	],
+	"version": "0.1"
+}

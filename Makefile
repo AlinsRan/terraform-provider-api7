@@ -9,7 +9,7 @@ INSTALL_DIR  = ~/.terraform.d/plugins/$(HOSTNAME)/$(NAMESPACE)/$(NAME)/$(VERSION
 
 # 完整 OpenAPI 规范路径，需根据实际位置设置
 # 例：API7_SPEC=/path/to/api7ee-3-control-plane/internal/pkg/consts/manifests/openapi.generated.yaml make generate
-API7_SPEC    ?= $(error 请设置 API7_SPEC 变量，指向 api7ee-3-control-plane 仓库中 openapi.generated.yaml 的路径)
+API7_SPEC    ?= /workspace/api7/api7ee-3-control-plane/internal/pkg/consts/manifests/openapi.generated.yaml
 
 default: build
 
@@ -22,9 +22,12 @@ install: build
 	mkdir -p $(INSTALL_DIR)
 	cp $(BINARY) $(INSTALL_DIR)/
 
+.PHONY: update-openapi
+update-openapi:
+	python3 scripts/extract-openapi.py --spec $(API7_SPEC) --out openapi-subset.yaml
+
 .PHONY: generate
 generate:
-	python3 scripts/extract-openapi.py --spec $(API7_SPEC) --out openapi-subset.yaml
 	oapi-codegen --config oapi-codegen.yaml openapi-subset.yaml
 
 .PHONY: fmt

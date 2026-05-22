@@ -6,7 +6,9 @@ import (
 	"fmt"
 
 	"github.com/api7/terraform-provider-api7/internal/client"
+	gen "github.com/api7/terraform-provider-api7/internal/provider/generated/resource_consumer"
 	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -26,6 +28,7 @@ type ConsumerResource struct {
 type ConsumerResourceModel struct {
 	Username types.String         `tfsdk:"username"`
 	Desc     types.String         `tfsdk:"desc"`
+	Labels   types.Map            `tfsdk:"labels"`
 	Plugins  jsontypes.Normalized `tfsdk:"plugins"`
 }
 
@@ -37,30 +40,34 @@ func (r *ConsumerResource) Metadata(_ context.Context, req resource.MetadataRequ
 	resp.TypeName = req.ProviderTypeName + "_consumer"
 }
 
-func (r *ConsumerResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
-	resp.Schema = schema.Schema{
-		Description: "Manages an API7 Consumer.",
-		Attributes: map[string]schema.Attribute{
-			"username": schema.StringAttribute{
-				Required:    true,
-				Description: "Unique username. Used as the resource ID.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"desc": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Description.",
-			},
-			"plugins": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: `Plugin configuration as JSON string, e.g. jsonencode({"key-auth":{"key":"secret"}}).`,
-				CustomType:  jsontypes.NormalizedType{},
-			},
+func (r *ConsumerResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	s := gen.ConsumerResourceSchema(ctx)
+	s.Description = "Manages an API7 Consumer."
+
+	// username is immutable — replacing it creates a new consumer.
+	s.Attributes["username"] = schema.StringAttribute{
+		Required:    true,
+		Description: "Unique username. Changing this forces a new resource.",
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.RequiresReplace(),
 		},
+		// Preserve validators from generated schema.
+		Validators: s.Attributes["username"].(schema.StringAttribute).Validators,
 	}
+
+	// Override plugins to free-form JSON string.
+	s.Attributes["plugins"] = schema.StringAttribute{
+		Optional:    true,
+		Computed:    true,
+		CustomType:  jsontypes.NormalizedType{},
+		Description: `Plugin configuration as JSON string, e.g. jsonencode({"key-auth":{"key":"secret"}}).`,
+	}
+
+	// Remove internal / response-only fields.
+	delete(s.Attributes, "gateway_group_id")
+	delete(s.Attributes, "value")
+
+	resp.Schema = s
 }
 
 func (r *ConsumerResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -83,9 +90,7 @@ func (r *ConsumerResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	body := client.CreateConsumerJSONRequestBody{
-		Username: plan.Username.ValueString(),
-	}
+	body := client.CreateConsumerJSONRequestBody{Username: plan.Username.ValueString()}
 	if !plan.Desc.IsNull() && !plan.Desc.IsUnknown() {
 		desc := plan.Desc.ValueString()
 		body.Desc = &desc
@@ -109,7 +114,7 @@ func (r *ConsumerResource) Create(ctx context.Context, req resource.CreateReques
 	}
 
 	val := apiResp.JSON200.Value
-	state := buildConsumerModel(val.Username, val.Desc, val.Plugins)
+	state := buildConsumerModel(ctx, val.Username, val.Desc, val.Plugins)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -120,10 +125,8 @@ func (r *ConsumerResource) Read(ctx context.Context, req resource.ReadRequest, r
 		return
 	}
 
-	username := state.Username.ValueString()
 	params := &client.GetConsumerParams{GatewayGroupId: r.gatewayGroupID}
-
-	apiResp, err := r.client.GetConsumerWithResponse(ctx, username, params)
+	apiResp, err := r.client.GetConsumerWithResponse(ctx, state.Username.ValueString(), params)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read consumer", err.Error())
 		return
@@ -139,7 +142,7 @@ func (r *ConsumerResource) Read(ctx context.Context, req resource.ReadRequest, r
 	}
 
 	val := apiResp.JSON200.Value
-	newState := buildConsumerModel(val.Username, val.Desc, val.Plugins)
+	newState := buildConsumerModel(ctx, val.Username, val.Desc, val.Plugins)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -150,9 +153,7 @@ func (r *ConsumerResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	body := client.UpsertConsumerJSONRequestBody{
-		Username: plan.Username.ValueString(),
-	}
+	body := client.UpsertConsumerJSONRequestBody{Username: plan.Username.ValueString()}
 	if !plan.Desc.IsNull() && !plan.Desc.IsUnknown() {
 		desc := plan.Desc.ValueString()
 		body.Desc = &desc
@@ -163,10 +164,8 @@ func (r *ConsumerResource) Update(ctx context.Context, req resource.UpdateReques
 		body.Plugins = &plugins
 	}
 
-	username := plan.Username.ValueString()
 	params := &client.UpsertConsumerParams{GatewayGroupId: r.gatewayGroupID}
-
-	apiResp, err := r.client.UpsertConsumerWithResponse(ctx, username, params, body)
+	apiResp, err := r.client.UpsertConsumerWithResponse(ctx, plan.Username.ValueString(), params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to update consumer", err.Error())
 		return
@@ -178,7 +177,7 @@ func (r *ConsumerResource) Update(ctx context.Context, req resource.UpdateReques
 	}
 
 	val := apiResp.JSON200.Value
-	state := buildConsumerModel(val.Username, val.Desc, val.Plugins)
+	state := buildConsumerModel(ctx, val.Username, val.Desc, val.Plugins)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -189,10 +188,8 @@ func (r *ConsumerResource) Delete(ctx context.Context, req resource.DeleteReques
 		return
 	}
 
-	username := state.Username.ValueString()
 	params := &client.DeleteConsumerParams{GatewayGroupId: r.gatewayGroupID}
-
-	apiResp, err := r.client.DeleteConsumerWithResponse(ctx, username, params)
+	apiResp, err := r.client.DeleteConsumerWithResponse(ctx, state.Username.ValueString(), params)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete consumer", err.Error())
 		return
@@ -207,10 +204,11 @@ func (r *ConsumerResource) ImportState(ctx context.Context, req resource.ImportS
 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("username"), req.ID)...)
 }
 
-// buildConsumerModel constructs the Terraform state model from raw API response fields.
-func buildConsumerModel(username string, desc *string, plugins *map[string]interface{}) ConsumerResourceModel {
+func buildConsumerModel(ctx context.Context, username string, desc *string, plugins *map[string]interface{}) ConsumerResourceModel {
 	m := ConsumerResourceModel{
 		Username: types.StringValue(username),
+		Labels:   types.MapValueMust(types.StringType, map[string]attr.Value{}),
+		Plugins:  jsontypes.NewNormalizedNull(),
 	}
 	if desc != nil {
 		m.Desc = types.StringValue(*desc)
@@ -220,8 +218,6 @@ func buildConsumerModel(username string, desc *string, plugins *map[string]inter
 	if plugins != nil && len(*plugins) > 0 {
 		b, _ := json.Marshal(plugins)
 		m.Plugins = jsontypes.NewNormalizedValue(string(b))
-	} else {
-		m.Plugins = jsontypes.NewNormalizedNull()
 	}
 	return m
 }

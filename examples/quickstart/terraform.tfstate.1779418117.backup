@@ -1,0 +1,141 @@
+{
+  "version": 4,
+  "terraform_version": "1.9.8",
+  "serial": 47,
+  "lineage": "e65634d0-457e-8872-2ae6-7e8109fb8aa8",
+  "outputs": {},
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "api7_consumer",
+      "name": "alice",
+      "provider": "provider[\"registry.terraform.io/api7/api7\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "desc": "示例 consumer",
+            "plugins": null,
+            "username": "alice"
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "api7_route",
+      "name": "get",
+      "provider": "provider[\"registry.terraform.io/api7/api7\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "1a93d078-6f55-4e9d-836f-90d3f4530d24",
+            "labels": null,
+            "methods": [
+              "GET"
+            ],
+            "name": "get",
+            "paths": [
+              "/get"
+            ],
+            "plugins": "{\"key-auth\":{}}",
+            "service_id": "9a61e083-3b01-46c4-b202-b3a9570d4a70"
+          },
+          "sensitive_attributes": [],
+          "dependencies": [
+            "api7_service.httpbin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "api7_route",
+      "name": "get_anything",
+      "provider": "provider[\"registry.terraform.io/api7/api7\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "a348f6c6-c0ee-4ea5-b1c1-473475fedfb7",
+            "labels": null,
+            "methods": [
+              "GET"
+            ],
+            "name": "get-anything",
+            "paths": [
+              "/anything/*"
+            ],
+            "plugins": null,
+            "service_id": "9a61e083-3b01-46c4-b202-b3a9570d4a70"
+          },
+          "sensitive_attributes": [],
+          "dependencies": [
+            "api7_service.httpbin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "api7_route",
+      "name": "headers",
+      "provider": "provider[\"registry.terraform.io/api7/api7\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "e1497b85-145c-402f-9f3f-721f56ffec82",
+            "labels": null,
+            "methods": [
+              "GET",
+              "POST"
+            ],
+            "name": "headers",
+            "paths": [
+              "/headers"
+            ],
+            "plugins": null,
+            "service_id": "9a61e083-3b01-46c4-b202-b3a9570d4a70"
+          },
+          "sensitive_attributes": [],
+          "dependencies": [
+            "api7_service.httpbin"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "api7_service",
+      "name": "httpbin",
+      "provider": "provider[\"registry.terraform.io/api7/api7\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "desc": "HTTPBin 测试服务",
+            "id": "9a61e083-3b01-46c4-b202-b3a9570d4a70",
+            "name": "httpbin",
+            "plugins": null,
+            "upstream": {
+              "nodes": [
+                {
+                  "host": "httpbin.org",
+                  "port": 80,
+                  "weight": 100
+                }
+              ],
+              "scheme": "http",
+              "type": "roundrobin"
+            }
+          },
+          "sensitive_attributes": []
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}

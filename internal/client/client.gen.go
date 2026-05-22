@@ -23,45 +23,14 @@ const (
 
 // Defines values for ListGatewayGroupsParamsDirection.
 const (
-	ListGatewayGroupsParamsDirectionAsc  ListGatewayGroupsParamsDirection = "asc"
-	ListGatewayGroupsParamsDirectionDesc ListGatewayGroupsParamsDirection = "desc"
+	Asc  ListGatewayGroupsParamsDirection = "asc"
+	Desc ListGatewayGroupsParamsDirection = "desc"
 )
 
 // Defines values for ListGatewayGroupsParamsOrderBy.
 const (
-	ListGatewayGroupsParamsOrderByCreatedAt ListGatewayGroupsParamsOrderBy = "created_at"
-	ListGatewayGroupsParamsOrderByUpdatedAt ListGatewayGroupsParamsOrderBy = "updated_at"
-)
-
-// Defines values for CreateGatewayGroupJSONBodyType.
-const (
-	Api7Gateway           CreateGatewayGroupJSONBodyType = "api7_gateway"
-	Api7IngressController CreateGatewayGroupJSONBodyType = "api7_ingress_controller"
-)
-
-// Defines values for ListConsumersParamsDirection.
-const (
-	ListConsumersParamsDirectionAsc  ListConsumersParamsDirection = "asc"
-	ListConsumersParamsDirectionDesc ListConsumersParamsDirection = "desc"
-)
-
-// Defines values for ListConsumersParamsOrderBy.
-const (
-	ListConsumersParamsOrderByCreatedAt ListConsumersParamsOrderBy = "created_at"
-	ListConsumersParamsOrderByUpdatedAt ListConsumersParamsOrderBy = "updated_at"
-	ListConsumersParamsOrderByUsername  ListConsumersParamsOrderBy = "username"
-)
-
-// Defines values for ListPublishedServiceRoutesParamsDirection.
-const (
-	ListPublishedServiceRoutesParamsDirectionAsc  ListPublishedServiceRoutesParamsDirection = "asc"
-	ListPublishedServiceRoutesParamsDirectionDesc ListPublishedServiceRoutesParamsDirection = "desc"
-)
-
-// Defines values for ListPublishedServiceRoutesParamsOrderBy.
-const (
-	ListPublishedServiceRoutesParamsOrderByCreatedAt ListPublishedServiceRoutesParamsOrderBy = "created_at"
-	ListPublishedServiceRoutesParamsOrderByUpdatedAt ListPublishedServiceRoutesParamsOrderBy = "updated_at"
+	CreatedAt ListGatewayGroupsParamsOrderBy = "created_at"
+	UpdatedAt ListGatewayGroupsParamsOrderBy = "updated_at"
 )
 
 // Defines values for CreatePublishedServiceRouteJSONBodyMethods.
@@ -88,32 +57,6 @@ const (
 	PutPublishedServiceRouteJSONBodyMethodsPOST    PutPublishedServiceRouteJSONBodyMethods = "POST"
 	PutPublishedServiceRouteJSONBodyMethodsPUT     PutPublishedServiceRouteJSONBodyMethods = "PUT"
 	PutPublishedServiceRouteJSONBodyMethodsTRACE   PutPublishedServiceRouteJSONBodyMethods = "TRACE"
-)
-
-// Defines values for ListPublishedServicesParamsDirection.
-const (
-	ListPublishedServicesParamsDirectionAsc  ListPublishedServicesParamsDirection = "asc"
-	ListPublishedServicesParamsDirectionDesc ListPublishedServicesParamsDirection = "desc"
-)
-
-// Defines values for ListPublishedServicesParamsOrderBy.
-const (
-	ListPublishedServicesParamsOrderByCreatedAt     ListPublishedServicesParamsOrderBy = "created_at"
-	ListPublishedServicesParamsOrderByLastPublished ListPublishedServicesParamsOrderBy = "last_published"
-	ListPublishedServicesParamsOrderByName          ListPublishedServicesParamsOrderBy = "name"
-	ListPublishedServicesParamsOrderByUpdatedAt     ListPublishedServicesParamsOrderBy = "updated_at"
-)
-
-// Defines values for ListPublishedServicesParamsUnhealthyNodes.
-const (
-	NoUnhealthyNodes     ListPublishedServicesParamsUnhealthyNodes = "no_unhealthy_nodes"
-	UnhealthyNodesExists ListPublishedServicesParamsUnhealthyNodes = "unhealthy_nodes_exists"
-)
-
-// Defines values for ListPublishedServicesParamsType.
-const (
-	ListPublishedServicesParamsTypeHttp   ListPublishedServicesParamsType = "http"
-	ListPublishedServicesParamsTypeStream ListPublishedServicesParamsType = "stream"
 )
 
 // Defines values for CreatePublishedServiceJSONBodyStatus.
@@ -344,8 +287,8 @@ const (
 
 // Defines values for PutPublishedServiceJSONBody1UpstreamScheme.
 const (
-	Tcp PutPublishedServiceJSONBody1UpstreamScheme = "tcp"
-	Udp PutPublishedServiceJSONBody1UpstreamScheme = "udp"
+	PutPublishedServiceJSONBody1UpstreamSchemeTcp PutPublishedServiceJSONBody1UpstreamScheme = "tcp"
+	PutPublishedServiceJSONBody1UpstreamSchemeUdp PutPublishedServiceJSONBody1UpstreamScheme = "udp"
 )
 
 // Defines values for PutPublishedServiceJSONBody1UpstreamType.
@@ -386,25 +329,6 @@ type ListGatewayGroupsParamsDirection string
 // ListGatewayGroupsParamsOrderBy defines parameters for ListGatewayGroups.
 type ListGatewayGroupsParamsOrderBy string
 
-// CreateGatewayGroupJSONBody defines parameters for CreateGatewayGroup.
-type CreateGatewayGroupJSONBody struct {
-	// Description Gateway group description.
-	Description *string `json:"description,omitempty"`
-
-	// EnforceServicePublishing If ture, bypass version control and rollback when updating services directly on a gateway group.
-	EnforceServicePublishing *bool `json:"enforce_service_publishing,omitempty"`
-
-	// Labels Key-value pairs of labels.
-	Labels *map[string]string `json:"labels,omitempty"`
-
-	// Name The object name.
-	Name string                          `json:"name"`
-	Type *CreateGatewayGroupJSONBodyType `json:"type,omitempty"`
-}
-
-// CreateGatewayGroupJSONBodyType defines parameters for CreateGatewayGroup.
-type CreateGatewayGroupJSONBodyType string
-
 // PutGatewayGroupJSONBody defines parameters for PutGatewayGroup.
 type PutGatewayGroupJSONBody struct {
 	// Description Gateway group description.
@@ -416,36 +340,6 @@ type PutGatewayGroupJSONBody struct {
 	// Name The object name.
 	Name string `json:"name"`
 }
-
-// ListConsumersParams defines parameters for ListConsumers.
-type ListConsumersParams struct {
-	// GatewayGroupId Gateway group ID. Optional when using the gateway group admin key to authenticate.
-	GatewayGroupId string `form:"gateway_group_id" json:"gateway_group_id"`
-
-	// Page Page number of the listed resources. Used together with `page_size`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
-
-	// PageSize Number of resources listed per page. Used together with `page`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	PageSize *int32 `form:"page_size,omitempty" json:"page_size,omitempty"`
-
-	// Direction Order to list the resources by. The sorting index follows the configuration of `order_by`.
-	Direction *ListConsumersParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
-
-	// OrderBy Index to order consumers by.
-	OrderBy *ListConsumersParamsOrderBy `form:"order_by,omitempty" json:"order_by,omitempty"`
-
-	// Search Condition to search resources by.
-	Search *string `form:"search,omitempty" json:"search,omitempty"`
-
-	// Labels Label(s) to filter resources by. The format is `labels[key]=value` and should be URL-encoded.
-	Labels *string `form:"labels,omitempty" json:"labels,omitempty"`
-}
-
-// ListConsumersParamsDirection defines parameters for ListConsumers.
-type ListConsumersParamsDirection string
-
-// ListConsumersParamsOrderBy defines parameters for ListConsumers.
-type ListConsumersParamsOrderBy string
 
 // CreateConsumerJSONBody defines parameters for CreateConsumer.
 type CreateConsumerJSONBody struct {
@@ -500,39 +394,6 @@ type UpsertConsumerParams struct {
 	// GatewayGroupId Gateway group ID. Optional when using the gateway group admin key to authenticate.
 	GatewayGroupId string `form:"gateway_group_id" json:"gateway_group_id"`
 }
-
-// ListPublishedServiceRoutesParams defines parameters for ListPublishedServiceRoutes.
-type ListPublishedServiceRoutesParams struct {
-	// ServiceId The unique identifier of the published service.
-	ServiceId string `form:"service_id" json:"service_id"`
-
-	// Page Page number of the listed resources. Used together with `page_size`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
-
-	// PageSize Number of resources listed per page. Used together with `page`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	PageSize *int32 `form:"page_size,omitempty" json:"page_size,omitempty"`
-
-	// Direction Order to list the resources by. The sorting index follows the configuration of `order_by`.
-	Direction *ListPublishedServiceRoutesParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
-
-	// OrderBy Index to order resources by.
-	OrderBy *ListPublishedServiceRoutesParamsOrderBy `form:"order_by,omitempty" json:"order_by,omitempty"`
-
-	// Search Condition to search resources by.
-	Search *string `form:"search,omitempty" json:"search,omitempty"`
-
-	// GatewayGroupId Gateway group ID. Optional when using the gateway group admin key to authenticate.
-	GatewayGroupId string `form:"gateway_group_id" json:"gateway_group_id"`
-
-	// WithPublishInfo If true, include publish information in the response, such as `apisix_route_id`, `route_version_id`, and `service_version_id`. The additional information is only useful for the Dashboard and not for API users.
-	WithPublishInfo *bool `form:"with_publish_info,omitempty" json:"with_publish_info,omitempty"`
-}
-
-// ListPublishedServiceRoutesParamsDirection defines parameters for ListPublishedServiceRoutes.
-type ListPublishedServiceRoutesParamsDirection string
-
-// ListPublishedServiceRoutesParamsOrderBy defines parameters for ListPublishedServiceRoutes.
-type ListPublishedServiceRoutesParamsOrderBy string
 
 // CreatePublishedServiceRouteJSONBody defines parameters for CreatePublishedServiceRoute.
 type CreatePublishedServiceRouteJSONBody struct {
@@ -656,52 +517,6 @@ type PutPublishedServiceRouteParams struct {
 
 // PutPublishedServiceRouteJSONBodyMethods defines parameters for PutPublishedServiceRoute.
 type PutPublishedServiceRouteJSONBodyMethods string
-
-// ListPublishedServicesParams defines parameters for ListPublishedServices.
-type ListPublishedServicesParams struct {
-	// Page Page number of the listed resources. Used together with `page_size`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
-
-	// PageSize Number of resources listed per page. Used together with `page`. For example, when there are 13 resources in total, if the query parameters are `page=1&page_size=10`, the GET response will show the route `total` as `13` and display 10 resources in the first page. If the query parameters are `page=2&page_size=10`, the GET response will show the route `total` as `13` and display 3 resources in the second page.
-	PageSize *int32 `form:"page_size,omitempty" json:"page_size,omitempty"`
-
-	// Direction Order to list the resources by. The sorting index follows the configuration of `order_by`.
-	Direction *ListPublishedServicesParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
-
-	// OrderBy Index to order the services by.
-	OrderBy *ListPublishedServicesParamsOrderBy `form:"order_by,omitempty" json:"order_by,omitempty"`
-
-	// Search Condition to search resources by.
-	Search *string `form:"search,omitempty" json:"search,omitempty"`
-
-	// GatewayGroupId Gateway group ID. Optional when using the gateway group admin key to authenticate.
-	GatewayGroupId string `form:"gateway_group_id" json:"gateway_group_id"`
-
-	// UnhealthyNodes Filter of services based on whether unhealthy nodes exist. `unhealthy_nodes_exists` filters for services where unhealthy nodes exist. `no_unhealthy_nodes` filters for servies where there are no unhealthy nodes.
-	UnhealthyNodes *[]ListPublishedServicesParamsUnhealthyNodes `form:"unhealthy_nodes,omitempty" json:"unhealthy_nodes,omitempty"`
-
-	// Labels Label(s) to filter resources by. The format is `labels[key]=value` and should be URL-encoded.
-	Labels *string   `form:"labels,omitempty" json:"labels,omitempty"`
-	Hosts  *[]string `form:"hosts,omitempty" json:"hosts,omitempty"`
-
-	// Type Type of service. `http` corresponds to L7 service and `stream` corresponds to L4 service.
-	Type *[]ListPublishedServicesParamsType `form:"type,omitempty" json:"type,omitempty"`
-
-	// WithPublishInfo If true, include publish information in the response, such as `apisix_route_id`, `route_version_id`, and `service_version_id`. The additional information is only useful for the Dashboard and not for API users.
-	WithPublishInfo *bool `form:"with_publish_info,omitempty" json:"with_publish_info,omitempty"`
-}
-
-// ListPublishedServicesParamsDirection defines parameters for ListPublishedServices.
-type ListPublishedServicesParamsDirection string
-
-// ListPublishedServicesParamsOrderBy defines parameters for ListPublishedServices.
-type ListPublishedServicesParamsOrderBy string
-
-// ListPublishedServicesParamsUnhealthyNodes defines parameters for ListPublishedServices.
-type ListPublishedServicesParamsUnhealthyNodes string
-
-// ListPublishedServicesParamsType defines parameters for ListPublishedServices.
-type ListPublishedServicesParamsType string
 
 // CreatePublishedServiceJSONBody defines parameters for CreatePublishedService.
 type CreatePublishedServiceJSONBody struct {
@@ -1944,9 +1759,6 @@ type PutPublishedServiceJSONBody1UpstreamScheme string
 // PutPublishedServiceJSONBody1UpstreamType defines parameters for PutPublishedService.
 type PutPublishedServiceJSONBody1UpstreamType string
 
-// CreateGatewayGroupJSONRequestBody defines body for CreateGatewayGroup for application/json ContentType.
-type CreateGatewayGroupJSONRequestBody CreateGatewayGroupJSONBody
-
 // PutGatewayGroupJSONRequestBody defines body for PutGatewayGroup for application/json ContentType.
 type PutGatewayGroupJSONRequestBody PutGatewayGroupJSONBody
 
@@ -2044,24 +1856,10 @@ type ClientInterface interface {
 	// ListGatewayGroups request
 	ListGatewayGroups(ctx context.Context, params *ListGatewayGroupsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// CreateGatewayGroupWithBody request with any body
-	CreateGatewayGroupWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	CreateGatewayGroup(ctx context.Context, body CreateGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// DeleteGatewayGroup request
-	DeleteGatewayGroup(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetGatewayGroup request
-	GetGatewayGroup(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// PutGatewayGroupWithBody request with any body
 	PutGatewayGroupWithBody(ctx context.Context, gatewayGroupId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutGatewayGroup(ctx context.Context, gatewayGroupId string, body PutGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListConsumers request
-	ListConsumers(ctx context.Context, params *ListConsumersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreateConsumerWithBody request with any body
 	CreateConsumerWithBody(ctx context.Context, params *CreateConsumerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2079,9 +1877,6 @@ type ClientInterface interface {
 
 	UpsertConsumer(ctx context.Context, username string, params *UpsertConsumerParams, body UpsertConsumerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// ListPublishedServiceRoutes request
-	ListPublishedServiceRoutes(ctx context.Context, params *ListPublishedServiceRoutesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// CreatePublishedServiceRouteWithBody request with any body
 	CreatePublishedServiceRouteWithBody(ctx context.Context, params *CreatePublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -2097,9 +1892,6 @@ type ClientInterface interface {
 	PutPublishedServiceRouteWithBody(ctx context.Context, routeId string, params *PutPublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PutPublishedServiceRoute(ctx context.Context, routeId string, params *PutPublishedServiceRouteParams, body PutPublishedServiceRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// ListPublishedServices request
-	ListPublishedServices(ctx context.Context, params *ListPublishedServicesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CreatePublishedServiceWithBody request with any body
 	CreatePublishedServiceWithBody(ctx context.Context, params *CreatePublishedServiceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -2130,54 +1922,6 @@ func (c *Client) ListGatewayGroups(ctx context.Context, params *ListGatewayGroup
 	return c.Client.Do(req)
 }
 
-func (c *Client) CreateGatewayGroupWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGatewayGroupRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CreateGatewayGroup(ctx context.Context, body CreateGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCreateGatewayGroupRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) DeleteGatewayGroup(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewDeleteGatewayGroupRequest(c.Server, gatewayGroupId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetGatewayGroup(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetGatewayGroupRequest(c.Server, gatewayGroupId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) PutGatewayGroupWithBody(ctx context.Context, gatewayGroupId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutGatewayGroupRequestWithBody(c.Server, gatewayGroupId, contentType, body)
 	if err != nil {
@@ -2192,18 +1936,6 @@ func (c *Client) PutGatewayGroupWithBody(ctx context.Context, gatewayGroupId str
 
 func (c *Client) PutGatewayGroup(ctx context.Context, gatewayGroupId string, body PutGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutGatewayGroupRequest(c.Server, gatewayGroupId, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListConsumers(ctx context.Context, params *ListConsumersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListConsumersRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2286,18 +2018,6 @@ func (c *Client) UpsertConsumer(ctx context.Context, username string, params *Up
 	return c.Client.Do(req)
 }
 
-func (c *Client) ListPublishedServiceRoutes(ctx context.Context, params *ListPublishedServiceRoutesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListPublishedServiceRoutesRequest(c.Server, params)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) CreatePublishedServiceRouteWithBody(ctx context.Context, params *CreatePublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreatePublishedServiceRouteRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -2360,18 +2080,6 @@ func (c *Client) PutPublishedServiceRouteWithBody(ctx context.Context, routeId s
 
 func (c *Client) PutPublishedServiceRoute(ctx context.Context, routeId string, params *PutPublishedServiceRouteParams, body PutPublishedServiceRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPutPublishedServiceRouteRequest(c.Server, routeId, params, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) ListPublishedServices(ctx context.Context, params *ListPublishedServicesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewListPublishedServicesRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -2599,114 +2307,6 @@ func NewListGatewayGroupsRequest(server string, params *ListGatewayGroupsParams)
 	return req, nil
 }
 
-// NewCreateGatewayGroupRequest calls the generic CreateGatewayGroup builder with application/json body
-func NewCreateGatewayGroupRequest(server string, body CreateGatewayGroupJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewCreateGatewayGroupRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewCreateGatewayGroupRequestWithBody generates requests for CreateGatewayGroup with any type of body
-func NewCreateGatewayGroupRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/gateway_groups")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewDeleteGatewayGroupRequest generates requests for DeleteGatewayGroup
-func NewDeleteGatewayGroupRequest(server string, gatewayGroupId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "gateway_group_id", runtime.ParamLocationPath, gatewayGroupId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/gateway_groups/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetGatewayGroupRequest generates requests for GetGatewayGroup
-func NewGetGatewayGroupRequest(server string, gatewayGroupId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "gateway_group_id", runtime.ParamLocationPath, gatewayGroupId)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/api/gateway_groups/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewPutGatewayGroupRequest calls the generic PutGatewayGroup builder with application/json body
 func NewPutGatewayGroupRequest(server string, gatewayGroupId string, body PutGatewayGroupJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -2750,147 +2350,6 @@ func NewPutGatewayGroupRequestWithBody(server string, gatewayGroupId string, con
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewListConsumersRequest generates requests for ListConsumers
-func NewListConsumersRequest(server string, params *ListConsumersParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apisix/admin/consumers")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "gateway_group_id", runtime.ParamLocationQuery, params.GatewayGroupId); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.Page != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, *params.Page); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.PageSize != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page_size", runtime.ParamLocationQuery, *params.PageSize); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Direction != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "direction", runtime.ParamLocationQuery, *params.Direction); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OrderBy != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "order_by", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Search != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "search", runtime.ParamLocationQuery, *params.Search); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Labels != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "labels", runtime.ParamLocationQuery, *params.Labels); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -3118,159 +2577,6 @@ func NewUpsertConsumerRequestWithBody(server string, username string, params *Up
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewListPublishedServiceRoutesRequest generates requests for ListPublishedServiceRoutes
-func NewListPublishedServiceRoutesRequest(server string, params *ListPublishedServiceRoutesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apisix/admin/routes")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "service_id", runtime.ParamLocationQuery, params.ServiceId); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.Page != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, *params.Page); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.PageSize != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page_size", runtime.ParamLocationQuery, *params.PageSize); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Direction != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "direction", runtime.ParamLocationQuery, *params.Direction); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OrderBy != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "order_by", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Search != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "search", runtime.ParamLocationQuery, *params.Search); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "gateway_group_id", runtime.ParamLocationQuery, params.GatewayGroupId); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.WithPublishInfo != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "with_publish_info", runtime.ParamLocationQuery, *params.WithPublishInfo); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -3514,211 +2820,6 @@ func NewPutPublishedServiceRouteRequestWithBody(server string, routeId string, p
 	}
 
 	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
-// NewListPublishedServicesRequest generates requests for ListPublishedServices
-func NewListPublishedServicesRequest(server string, params *ListPublishedServicesParams) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/apisix/admin/services")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	if params != nil {
-		queryValues := queryURL.Query()
-
-		if params.Page != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page", runtime.ParamLocationQuery, *params.Page); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.PageSize != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "page_size", runtime.ParamLocationQuery, *params.PageSize); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Direction != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "direction", runtime.ParamLocationQuery, *params.Direction); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OrderBy != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "order_by", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Search != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "search", runtime.ParamLocationQuery, *params.Search); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "gateway_group_id", runtime.ParamLocationQuery, params.GatewayGroupId); err != nil {
-			return nil, err
-		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-			return nil, err
-		} else {
-			for k, v := range parsed {
-				for _, v2 := range v {
-					queryValues.Add(k, v2)
-				}
-			}
-		}
-
-		if params.UnhealthyNodes != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "unhealthy_nodes", runtime.ParamLocationQuery, *params.UnhealthyNodes); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Labels != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "labels", runtime.ParamLocationQuery, *params.Labels); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Hosts != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "hosts", runtime.ParamLocationQuery, *params.Hosts); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.Type != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "type", runtime.ParamLocationQuery, *params.Type); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.WithPublishInfo != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "with_publish_info", runtime.ParamLocationQuery, *params.WithPublishInfo); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		queryURL.RawQuery = queryValues.Encode()
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
 
 	return req, nil
 }
@@ -4012,24 +3113,10 @@ type ClientWithResponsesInterface interface {
 	// ListGatewayGroupsWithResponse request
 	ListGatewayGroupsWithResponse(ctx context.Context, params *ListGatewayGroupsParams, reqEditors ...RequestEditorFn) (*ListGatewayGroupsResponse, error)
 
-	// CreateGatewayGroupWithBodyWithResponse request with any body
-	CreateGatewayGroupWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGatewayGroupResponse, error)
-
-	CreateGatewayGroupWithResponse(ctx context.Context, body CreateGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGatewayGroupResponse, error)
-
-	// DeleteGatewayGroupWithResponse request
-	DeleteGatewayGroupWithResponse(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*DeleteGatewayGroupResponse, error)
-
-	// GetGatewayGroupWithResponse request
-	GetGatewayGroupWithResponse(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*GetGatewayGroupResponse, error)
-
 	// PutGatewayGroupWithBodyWithResponse request with any body
 	PutGatewayGroupWithBodyWithResponse(ctx context.Context, gatewayGroupId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutGatewayGroupResponse, error)
 
 	PutGatewayGroupWithResponse(ctx context.Context, gatewayGroupId string, body PutGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*PutGatewayGroupResponse, error)
-
-	// ListConsumersWithResponse request
-	ListConsumersWithResponse(ctx context.Context, params *ListConsumersParams, reqEditors ...RequestEditorFn) (*ListConsumersResponse, error)
 
 	// CreateConsumerWithBodyWithResponse request with any body
 	CreateConsumerWithBodyWithResponse(ctx context.Context, params *CreateConsumerParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateConsumerResponse, error)
@@ -4047,9 +3134,6 @@ type ClientWithResponsesInterface interface {
 
 	UpsertConsumerWithResponse(ctx context.Context, username string, params *UpsertConsumerParams, body UpsertConsumerJSONRequestBody, reqEditors ...RequestEditorFn) (*UpsertConsumerResponse, error)
 
-	// ListPublishedServiceRoutesWithResponse request
-	ListPublishedServiceRoutesWithResponse(ctx context.Context, params *ListPublishedServiceRoutesParams, reqEditors ...RequestEditorFn) (*ListPublishedServiceRoutesResponse, error)
-
 	// CreatePublishedServiceRouteWithBodyWithResponse request with any body
 	CreatePublishedServiceRouteWithBodyWithResponse(ctx context.Context, params *CreatePublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePublishedServiceRouteResponse, error)
 
@@ -4065,9 +3149,6 @@ type ClientWithResponsesInterface interface {
 	PutPublishedServiceRouteWithBodyWithResponse(ctx context.Context, routeId string, params *PutPublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutPublishedServiceRouteResponse, error)
 
 	PutPublishedServiceRouteWithResponse(ctx context.Context, routeId string, params *PutPublishedServiceRouteParams, body PutPublishedServiceRouteJSONRequestBody, reqEditors ...RequestEditorFn) (*PutPublishedServiceRouteResponse, error)
-
-	// ListPublishedServicesWithResponse request
-	ListPublishedServicesWithResponse(ctx context.Context, params *ListPublishedServicesParams, reqEditors ...RequestEditorFn) (*ListPublishedServicesResponse, error)
 
 	// CreatePublishedServiceWithBodyWithResponse request with any body
 	CreatePublishedServiceWithBodyWithResponse(ctx context.Context, params *CreatePublishedServiceParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePublishedServiceResponse, error)
@@ -4152,152 +3233,6 @@ func (r ListGatewayGroupsResponse) StatusCode() int {
 	return 0
 }
 
-type CreateGatewayGroupResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		Value *struct {
-			// Config Control plane details.
-			Config *struct {
-				// ControlPlaneKeyPrefix The prefix of the key in the control plane (etcd). The pattern is `/gateway_groups/{gateway_group_id}`.
-				ControlPlaneKeyPrefix *string `json:"control_plane_key_prefix,omitempty"`
-
-				// ControlPlanePassword The etcd password.
-				ControlPlanePassword *string `json:"control_plane_password,omitempty"`
-
-				// ControlPlaneUser The etcd user.
-				ControlPlaneUser *string `json:"control_plane_user,omitempty"`
-
-				// ImageTag The API7 gateway version.
-				ImageTag *string `json:"image_tag,omitempty"`
-			} `json:"config,omitempty"`
-
-			// CreatedAt The object created timestamp.
-			CreatedAt *int `json:"created_at,omitempty"`
-
-			// Description Gateway group description.
-			Description *string `json:"description,omitempty"`
-
-			// EnforceServicePublishing If ture, bypass version control and rollback when updating services directly on a gateway group.
-			EnforceServicePublishing *bool `json:"enforce_service_publishing,omitempty"`
-
-			// Id The object ID.
-			Id *string `json:"id,omitempty"`
-
-			// Labels Key-value pairs of labels.
-			Labels *map[string]string `json:"labels,omitempty"`
-
-			// Name The object name.
-			Name *string                         `json:"name,omitempty"`
-			Type *CreateGatewayGroup200ValueType `json:"type,omitempty"`
-
-			// UpdatedAt The object updated timestamp.
-			UpdatedAt *int `json:"updated_at,omitempty"`
-		} `json:"value,omitempty"`
-	}
-}
-type CreateGatewayGroup200ValueType string
-
-// Status returns HTTPResponse.Status
-func (r CreateGatewayGroupResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CreateGatewayGroupResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type DeleteGatewayGroupResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *string
-}
-
-// Status returns HTTPResponse.Status
-func (r DeleteGatewayGroupResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r DeleteGatewayGroupResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetGatewayGroupResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		Value *struct {
-			// Config Control plane details.
-			Config *struct {
-				// ControlPlaneKeyPrefix The prefix of the key in the control plane (etcd). The pattern is `/gateway_groups/{gateway_group_id}`.
-				ControlPlaneKeyPrefix *string `json:"control_plane_key_prefix,omitempty"`
-
-				// ControlPlanePassword The etcd password.
-				ControlPlanePassword *string `json:"control_plane_password,omitempty"`
-
-				// ControlPlaneUser The etcd user.
-				ControlPlaneUser *string `json:"control_plane_user,omitempty"`
-
-				// ImageTag The API7 gateway version.
-				ImageTag *string `json:"image_tag,omitempty"`
-			} `json:"config,omitempty"`
-
-			// CreatedAt The object created timestamp.
-			CreatedAt *int `json:"created_at,omitempty"`
-
-			// Description Gateway group description.
-			Description *string `json:"description,omitempty"`
-
-			// EnforceServicePublishing If ture, bypass version control and rollback when updating services directly on a gateway group.
-			EnforceServicePublishing *bool `json:"enforce_service_publishing,omitempty"`
-
-			// Id The object ID.
-			Id *string `json:"id,omitempty"`
-
-			// Labels Key-value pairs of labels.
-			Labels *map[string]string `json:"labels,omitempty"`
-
-			// Name The object name.
-			Name *string                      `json:"name,omitempty"`
-			Type *GetGatewayGroup200ValueType `json:"type,omitempty"`
-
-			// UpdatedAt The object updated timestamp.
-			UpdatedAt *int `json:"updated_at,omitempty"`
-		} `json:"value,omitempty"`
-	}
-}
-type GetGatewayGroup200ValueType string
-
-// Status returns HTTPResponse.Status
-func (r GetGatewayGroupResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetGatewayGroupResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutGatewayGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -4354,59 +3289,6 @@ func (r PutGatewayGroupResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PutGatewayGroupResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type ListConsumersResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		// List An array of consumers.
-		List *[]struct {
-			// CreatedAt The object created timestamp.
-			CreatedAt *int `json:"created_at,omitempty"`
-
-			// Desc The object description.
-			Desc *string `json:"desc,omitempty"`
-
-			// Labels Key-value pairs of labels.
-			Labels *map[string]string `json:"labels,omitempty"`
-
-			// Plugins Key-value pairs of plugins and their configurations on the object.
-			Plugins *map[string]interface{} `json:"plugins,omitempty"`
-
-			// UpdatedAt The object updated timestamp.
-			UpdatedAt *int `json:"updated_at,omitempty"`
-
-			// Username The unique identifier of the consumer.
-			Username string `json:"username"`
-		} `json:"list,omitempty"`
-
-		// Total Total number of objects.
-		Total *int `json:"total,omitempty"`
-	}
-	JSON400 *struct {
-		// ErrorMsg The error message.
-		ErrorMsg *string `json:"error_msg,omitempty"`
-
-		// Value The specific resource.
-		Value *map[string]interface{} `json:"value,omitempty"`
-	}
-}
-
-// Status returns HTTPResponse.Status
-func (r ListConsumersResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListConsumersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4586,93 +3468,6 @@ func (r UpsertConsumerResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r UpsertConsumerResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type ListPublishedServiceRoutesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		// List The array of routes.
-		List *[]struct {
-			// CreatedAt The object created timestamp.
-			CreatedAt *int `json:"created_at,omitempty"`
-
-			// Desc The object description.
-			Desc *string `json:"desc,omitempty"`
-
-			// EnableWebsocket If true, enable Websocket proxying for the route.
-			EnableWebsocket *bool `json:"enable_websocket"`
-
-			// Id The object ID.
-			Id *string `json:"id,omitempty"`
-
-			// Labels Key-value pairs of labels.
-			Labels *map[string]string `json:"labels,omitempty"`
-
-			// Methods The allowed HTTP methods to access the route. If empty, all HTTP methods are allowed.
-			Methods *[]ListPublishedServiceRoutes200ListMethods `json:"methods,omitempty"`
-
-			// Name The object name.
-			Name *string `json:"name,omitempty"`
-
-			// Paths The URL path(s) (after the service's `path_prefix`) that the route will listen to. Each path should start with a `/`.
-			Paths *[]string `json:"paths,omitempty"`
-
-			// Plugins Key-value pairs of plugins and their configurations on the object.
-			Plugins *map[string]interface{} `json:"plugins,omitempty"`
-
-			// Priority Priority of the route. A higher value corresponds to a higher priority. If different Routes matches to the same URI, then the Route with the highest priority will be matched.
-			Priority *int `json:"priority,omitempty"`
-
-			// ServiceId The service ID.
-			ServiceId *string `json:"service_id,omitempty"`
-
-			// Timeout Timeout settings for connecting to, sending, and receiving messages from the upstream, in seconds.
-			Timeout *struct {
-				// Connect Connection timeout in seconds.
-				Connect *int `json:"connect,omitempty"`
-
-				// Read Receiving timeout in seconds.
-				Read *int `json:"read,omitempty"`
-
-				// Send Sending timeout in seconds.
-				Send *int `json:"send,omitempty"`
-			} `json:"timeout,omitempty"`
-
-			// UpdatedAt The object updated timestamp.
-			UpdatedAt *int `json:"updated_at,omitempty"`
-
-			// Vars Conditions in the format of [APISIX expressions](https://docs.api7.ai/apisix/reference/apisix-expressions) to match requests to routes. Case sensitive when matching a cookie name.
-			Vars *[]interface{} `json:"vars,omitempty"`
-		} `json:"list,omitempty"`
-
-		// Total Total number of objects.
-		Total *int `json:"total,omitempty"`
-	}
-	JSON400 *struct {
-		// ErrorMsg The error message.
-		ErrorMsg *string `json:"error_msg,omitempty"`
-
-		// Value The specific resource.
-		Value *map[string]interface{} `json:"value,omitempty"`
-	}
-}
-type ListPublishedServiceRoutes200ListMethods string
-
-// Status returns HTTPResponse.Status
-func (r ListPublishedServiceRoutesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListPublishedServiceRoutesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -4967,67 +3762,6 @@ func (r PutPublishedServiceRouteResponse) StatusCode() int {
 	return 0
 }
 
-type ListPublishedServicesResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *struct {
-		// List The array of services.
-		List *[]struct {
-			// CreatedAt The object created timestamp.
-			CreatedAt *int `json:"created_at,omitempty"`
-
-			// Desc The object description.
-			Desc *string `json:"desc,omitempty"`
-
-			// Id The object ID.
-			Id *string `json:"id,omitempty"`
-
-			// Labels Key-value pairs of labels.
-			Labels *map[string]string `json:"labels,omitempty"`
-
-			// LastPublished The object timestamp.
-			LastPublished *int `json:"last_published,omitempty"`
-
-			// Name The object name.
-			Name                        *string `json:"name,omitempty"`
-			PublishedGatewayGroupsCount *int    `json:"published_gateway_groups_count,omitempty"`
-
-			// Type Type of service. `http` corresponds to L7 service and `stream` corresponds to L4 service.
-			Type *ListPublishedServices200ListType `json:"type,omitempty"`
-
-			// UpdatedAt The object updated timestamp.
-			UpdatedAt *int `json:"updated_at,omitempty"`
-		} `json:"list,omitempty"`
-
-		// Total Total number of objects.
-		Total *int `json:"total,omitempty"`
-	}
-	JSON400 *struct {
-		// ErrorMsg The error message.
-		ErrorMsg *string `json:"error_msg,omitempty"`
-
-		// Value The specific resource.
-		Value *map[string]interface{} `json:"value,omitempty"`
-	}
-}
-type ListPublishedServices200ListType string
-
-// Status returns HTTPResponse.Status
-func (r ListPublishedServicesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r ListPublishedServicesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type CreatePublishedServiceResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5240,41 +3974,6 @@ func (c *ClientWithResponses) ListGatewayGroupsWithResponse(ctx context.Context,
 	return ParseListGatewayGroupsResponse(rsp)
 }
 
-// CreateGatewayGroupWithBodyWithResponse request with arbitrary body returning *CreateGatewayGroupResponse
-func (c *ClientWithResponses) CreateGatewayGroupWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateGatewayGroupResponse, error) {
-	rsp, err := c.CreateGatewayGroupWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateGatewayGroupResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateGatewayGroupWithResponse(ctx context.Context, body CreateGatewayGroupJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateGatewayGroupResponse, error) {
-	rsp, err := c.CreateGatewayGroup(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateGatewayGroupResponse(rsp)
-}
-
-// DeleteGatewayGroupWithResponse request returning *DeleteGatewayGroupResponse
-func (c *ClientWithResponses) DeleteGatewayGroupWithResponse(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*DeleteGatewayGroupResponse, error) {
-	rsp, err := c.DeleteGatewayGroup(ctx, gatewayGroupId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteGatewayGroupResponse(rsp)
-}
-
-// GetGatewayGroupWithResponse request returning *GetGatewayGroupResponse
-func (c *ClientWithResponses) GetGatewayGroupWithResponse(ctx context.Context, gatewayGroupId string, reqEditors ...RequestEditorFn) (*GetGatewayGroupResponse, error) {
-	rsp, err := c.GetGatewayGroup(ctx, gatewayGroupId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetGatewayGroupResponse(rsp)
-}
-
 // PutGatewayGroupWithBodyWithResponse request with arbitrary body returning *PutGatewayGroupResponse
 func (c *ClientWithResponses) PutGatewayGroupWithBodyWithResponse(ctx context.Context, gatewayGroupId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PutGatewayGroupResponse, error) {
 	rsp, err := c.PutGatewayGroupWithBody(ctx, gatewayGroupId, contentType, body, reqEditors...)
@@ -5290,15 +3989,6 @@ func (c *ClientWithResponses) PutGatewayGroupWithResponse(ctx context.Context, g
 		return nil, err
 	}
 	return ParsePutGatewayGroupResponse(rsp)
-}
-
-// ListConsumersWithResponse request returning *ListConsumersResponse
-func (c *ClientWithResponses) ListConsumersWithResponse(ctx context.Context, params *ListConsumersParams, reqEditors ...RequestEditorFn) (*ListConsumersResponse, error) {
-	rsp, err := c.ListConsumers(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListConsumersResponse(rsp)
 }
 
 // CreateConsumerWithBodyWithResponse request with arbitrary body returning *CreateConsumerResponse
@@ -5353,15 +4043,6 @@ func (c *ClientWithResponses) UpsertConsumerWithResponse(ctx context.Context, us
 	return ParseUpsertConsumerResponse(rsp)
 }
 
-// ListPublishedServiceRoutesWithResponse request returning *ListPublishedServiceRoutesResponse
-func (c *ClientWithResponses) ListPublishedServiceRoutesWithResponse(ctx context.Context, params *ListPublishedServiceRoutesParams, reqEditors ...RequestEditorFn) (*ListPublishedServiceRoutesResponse, error) {
-	rsp, err := c.ListPublishedServiceRoutes(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListPublishedServiceRoutesResponse(rsp)
-}
-
 // CreatePublishedServiceRouteWithBodyWithResponse request with arbitrary body returning *CreatePublishedServiceRouteResponse
 func (c *ClientWithResponses) CreatePublishedServiceRouteWithBodyWithResponse(ctx context.Context, params *CreatePublishedServiceRouteParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreatePublishedServiceRouteResponse, error) {
 	rsp, err := c.CreatePublishedServiceRouteWithBody(ctx, params, contentType, body, reqEditors...)
@@ -5412,15 +4093,6 @@ func (c *ClientWithResponses) PutPublishedServiceRouteWithResponse(ctx context.C
 		return nil, err
 	}
 	return ParsePutPublishedServiceRouteResponse(rsp)
-}
-
-// ListPublishedServicesWithResponse request returning *ListPublishedServicesResponse
-func (c *ClientWithResponses) ListPublishedServicesWithResponse(ctx context.Context, params *ListPublishedServicesParams, reqEditors ...RequestEditorFn) (*ListPublishedServicesResponse, error) {
-	rsp, err := c.ListPublishedServices(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListPublishedServicesResponse(rsp)
 }
 
 // CreatePublishedServiceWithBodyWithResponse request with arbitrary body returning *CreatePublishedServiceResponse
@@ -5544,162 +4216,6 @@ func ParseListGatewayGroupsResponse(rsp *http.Response) (*ListGatewayGroupsRespo
 	return response, nil
 }
 
-// ParseCreateGatewayGroupResponse parses an HTTP response from a CreateGatewayGroupWithResponse call
-func ParseCreateGatewayGroupResponse(rsp *http.Response) (*CreateGatewayGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CreateGatewayGroupResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Value *struct {
-				// Config Control plane details.
-				Config *struct {
-					// ControlPlaneKeyPrefix The prefix of the key in the control plane (etcd). The pattern is `/gateway_groups/{gateway_group_id}`.
-					ControlPlaneKeyPrefix *string `json:"control_plane_key_prefix,omitempty"`
-
-					// ControlPlanePassword The etcd password.
-					ControlPlanePassword *string `json:"control_plane_password,omitempty"`
-
-					// ControlPlaneUser The etcd user.
-					ControlPlaneUser *string `json:"control_plane_user,omitempty"`
-
-					// ImageTag The API7 gateway version.
-					ImageTag *string `json:"image_tag,omitempty"`
-				} `json:"config,omitempty"`
-
-				// CreatedAt The object created timestamp.
-				CreatedAt *int `json:"created_at,omitempty"`
-
-				// Description Gateway group description.
-				Description *string `json:"description,omitempty"`
-
-				// EnforceServicePublishing If ture, bypass version control and rollback when updating services directly on a gateway group.
-				EnforceServicePublishing *bool `json:"enforce_service_publishing,omitempty"`
-
-				// Id The object ID.
-				Id *string `json:"id,omitempty"`
-
-				// Labels Key-value pairs of labels.
-				Labels *map[string]string `json:"labels,omitempty"`
-
-				// Name The object name.
-				Name *string                         `json:"name,omitempty"`
-				Type *CreateGatewayGroup200ValueType `json:"type,omitempty"`
-
-				// UpdatedAt The object updated timestamp.
-				UpdatedAt *int `json:"updated_at,omitempty"`
-			} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseDeleteGatewayGroupResponse parses an HTTP response from a DeleteGatewayGroupWithResponse call
-func ParseDeleteGatewayGroupResponse(rsp *http.Response) (*DeleteGatewayGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &DeleteGatewayGroupResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetGatewayGroupResponse parses an HTTP response from a GetGatewayGroupWithResponse call
-func ParseGetGatewayGroupResponse(rsp *http.Response) (*GetGatewayGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetGatewayGroupResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Value *struct {
-				// Config Control plane details.
-				Config *struct {
-					// ControlPlaneKeyPrefix The prefix of the key in the control plane (etcd). The pattern is `/gateway_groups/{gateway_group_id}`.
-					ControlPlaneKeyPrefix *string `json:"control_plane_key_prefix,omitempty"`
-
-					// ControlPlanePassword The etcd password.
-					ControlPlanePassword *string `json:"control_plane_password,omitempty"`
-
-					// ControlPlaneUser The etcd user.
-					ControlPlaneUser *string `json:"control_plane_user,omitempty"`
-
-					// ImageTag The API7 gateway version.
-					ImageTag *string `json:"image_tag,omitempty"`
-				} `json:"config,omitempty"`
-
-				// CreatedAt The object created timestamp.
-				CreatedAt *int `json:"created_at,omitempty"`
-
-				// Description Gateway group description.
-				Description *string `json:"description,omitempty"`
-
-				// EnforceServicePublishing If ture, bypass version control and rollback when updating services directly on a gateway group.
-				EnforceServicePublishing *bool `json:"enforce_service_publishing,omitempty"`
-
-				// Id The object ID.
-				Id *string `json:"id,omitempty"`
-
-				// Labels Key-value pairs of labels.
-				Labels *map[string]string `json:"labels,omitempty"`
-
-				// Name The object name.
-				Name *string                      `json:"name,omitempty"`
-				Type *GetGatewayGroup200ValueType `json:"type,omitempty"`
-
-				// UpdatedAt The object updated timestamp.
-				UpdatedAt *int `json:"updated_at,omitempty"`
-			} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParsePutGatewayGroupResponse parses an HTTP response from a PutGatewayGroupWithResponse call
 func ParsePutGatewayGroupResponse(rsp *http.Response) (*PutGatewayGroupResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -5759,69 +4275,6 @@ func ParsePutGatewayGroupResponse(rsp *http.Response) (*PutGatewayGroupResponse,
 			return nil, err
 		}
 		response.JSON200 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListConsumersResponse parses an HTTP response from a ListConsumersWithResponse call
-func ParseListConsumersResponse(rsp *http.Response) (*ListConsumersResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListConsumersResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			// List An array of consumers.
-			List *[]struct {
-				// CreatedAt The object created timestamp.
-				CreatedAt *int `json:"created_at,omitempty"`
-
-				// Desc The object description.
-				Desc *string `json:"desc,omitempty"`
-
-				// Labels Key-value pairs of labels.
-				Labels *map[string]string `json:"labels,omitempty"`
-
-				// Plugins Key-value pairs of plugins and their configurations on the object.
-				Plugins *map[string]interface{} `json:"plugins,omitempty"`
-
-				// UpdatedAt The object updated timestamp.
-				UpdatedAt *int `json:"updated_at,omitempty"`
-
-				// Username The unique identifier of the consumer.
-				Username string `json:"username"`
-			} `json:"list,omitempty"`
-
-			// Total Total number of objects.
-			Total *int `json:"total,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest struct {
-			// ErrorMsg The error message.
-			ErrorMsg *string `json:"error_msg,omitempty"`
-
-			// Value The specific resource.
-			Value *map[string]interface{} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
 
 	}
 
@@ -6023,102 +4476,6 @@ func ParseUpsertConsumerResponse(rsp *http.Response) (*UpsertConsumerResponse, e
 				// Username The unique identifier of the consumer.
 				Username string `json:"username"`
 			} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest struct {
-			// ErrorMsg The error message.
-			ErrorMsg *string `json:"error_msg,omitempty"`
-
-			// Value The specific resource.
-			Value *map[string]interface{} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListPublishedServiceRoutesResponse parses an HTTP response from a ListPublishedServiceRoutesWithResponse call
-func ParseListPublishedServiceRoutesResponse(rsp *http.Response) (*ListPublishedServiceRoutesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListPublishedServiceRoutesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			// List The array of routes.
-			List *[]struct {
-				// CreatedAt The object created timestamp.
-				CreatedAt *int `json:"created_at,omitempty"`
-
-				// Desc The object description.
-				Desc *string `json:"desc,omitempty"`
-
-				// EnableWebsocket If true, enable Websocket proxying for the route.
-				EnableWebsocket *bool `json:"enable_websocket"`
-
-				// Id The object ID.
-				Id *string `json:"id,omitempty"`
-
-				// Labels Key-value pairs of labels.
-				Labels *map[string]string `json:"labels,omitempty"`
-
-				// Methods The allowed HTTP methods to access the route. If empty, all HTTP methods are allowed.
-				Methods *[]ListPublishedServiceRoutes200ListMethods `json:"methods,omitempty"`
-
-				// Name The object name.
-				Name *string `json:"name,omitempty"`
-
-				// Paths The URL path(s) (after the service's `path_prefix`) that the route will listen to. Each path should start with a `/`.
-				Paths *[]string `json:"paths,omitempty"`
-
-				// Plugins Key-value pairs of plugins and their configurations on the object.
-				Plugins *map[string]interface{} `json:"plugins,omitempty"`
-
-				// Priority Priority of the route. A higher value corresponds to a higher priority. If different Routes matches to the same URI, then the Route with the highest priority will be matched.
-				Priority *int `json:"priority,omitempty"`
-
-				// ServiceId The service ID.
-				ServiceId *string `json:"service_id,omitempty"`
-
-				// Timeout Timeout settings for connecting to, sending, and receiving messages from the upstream, in seconds.
-				Timeout *struct {
-					// Connect Connection timeout in seconds.
-					Connect *int `json:"connect,omitempty"`
-
-					// Read Receiving timeout in seconds.
-					Read *int `json:"read,omitempty"`
-
-					// Send Sending timeout in seconds.
-					Send *int `json:"send,omitempty"`
-				} `json:"timeout,omitempty"`
-
-				// UpdatedAt The object updated timestamp.
-				UpdatedAt *int `json:"updated_at,omitempty"`
-
-				// Vars Conditions in the format of [APISIX expressions](https://docs.api7.ai/apisix/reference/apisix-expressions) to match requests to routes. Case sensitive when matching a cookie name.
-				Vars *[]interface{} `json:"vars,omitempty"`
-			} `json:"list,omitempty"`
-
-			// Total Total number of objects.
-			Total *int `json:"total,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
@@ -6450,76 +4807,6 @@ func ParsePutPublishedServiceRouteResponse(rsp *http.Response) (*PutPublishedSer
 				// Vars Conditions in the format of [APISIX expressions](https://docs.api7.ai/apisix/reference/apisix-expressions) to match requests to routes. Case sensitive when matching a cookie name.
 				Vars *[]interface{} `json:"vars,omitempty"`
 			} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
-		var dest struct {
-			// ErrorMsg The error message.
-			ErrorMsg *string `json:"error_msg,omitempty"`
-
-			// Value The specific resource.
-			Value *map[string]interface{} `json:"value,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON400 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseListPublishedServicesResponse parses an HTTP response from a ListPublishedServicesWithResponse call
-func ParseListPublishedServicesResponse(rsp *http.Response) (*ListPublishedServicesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &ListPublishedServicesResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			// List The array of services.
-			List *[]struct {
-				// CreatedAt The object created timestamp.
-				CreatedAt *int `json:"created_at,omitempty"`
-
-				// Desc The object description.
-				Desc *string `json:"desc,omitempty"`
-
-				// Id The object ID.
-				Id *string `json:"id,omitempty"`
-
-				// Labels Key-value pairs of labels.
-				Labels *map[string]string `json:"labels,omitempty"`
-
-				// LastPublished The object timestamp.
-				LastPublished *int `json:"last_published,omitempty"`
-
-				// Name The object name.
-				Name                        *string `json:"name,omitempty"`
-				PublishedGatewayGroupsCount *int    `json:"published_gateway_groups_count,omitempty"`
-
-				// Type Type of service. `http` corresponds to L7 service and `stream` corresponds to L4 service.
-				Type *ListPublishedServices200ListType `json:"type,omitempty"`
-
-				// UpdatedAt The object updated timestamp.
-				UpdatedAt *int `json:"updated_at,omitempty"`
-			} `json:"list,omitempty"`
-
-			// Total Total number of objects.
-			Total *int `json:"total,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err

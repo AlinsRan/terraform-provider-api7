@@ -6,7 +6,10 @@ import (
 	"fmt"
 
 	"github.com/api7/terraform-provider-api7/internal/client"
+	gen "github.com/api7/terraform-provider-api7/internal/provider/generated/resource_route"
 	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
+	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -23,14 +26,21 @@ type RouteResource struct {
 	gatewayGroupID string
 }
 
+// RouteResourceModel mirrors the schema fields used for CRUD mapping.
+// plugins is jsontypes.Normalized (free-form JSON) instead of the generated empty SingleNested.
+// timeout uses the generated TimeoutValue which has connect/send/read int64 fields.
 type RouteResourceModel struct {
-	ID        types.String            `tfsdk:"id"`
-	Name      types.String            `tfsdk:"name"`
-	ServiceID types.String            `tfsdk:"service_id"`
-	Paths     []types.String          `tfsdk:"paths"`
-	Methods   []types.String          `tfsdk:"methods"`
-	Labels    map[string]types.String `tfsdk:"labels"`
-	Plugins   jsontypes.Normalized    `tfsdk:"plugins"`
+	Desc            types.String         `tfsdk:"desc"`
+	EnableWebsocket types.Bool           `tfsdk:"enable_websocket"`
+	Id              types.String         `tfsdk:"id"`
+	Labels          types.Map            `tfsdk:"labels"`
+	Methods         types.List           `tfsdk:"methods"`
+	Name            types.String         `tfsdk:"name"`
+	Paths           types.List           `tfsdk:"paths"`
+	Plugins         jsontypes.Normalized `tfsdk:"plugins"`
+	Priority        types.Int64          `tfsdk:"priority"`
+	ServiceId       types.String         `tfsdk:"service_id"`
+	Timeout         gen.TimeoutValue     `tfsdk:"timeout"`
 }
 
 func NewRouteResource() resource.Resource {
@@ -41,52 +51,35 @@ func (r *RouteResource) Metadata(_ context.Context, req resource.MetadataRequest
 	resp.TypeName = req.ProviderTypeName + "_route"
 }
 
-func (r *RouteResource) Schema(_ context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
-	resp.Schema = schema.Schema{
-		Description: "Manages an API7 Route.",
-		Attributes: map[string]schema.Attribute{
-			"id": schema.StringAttribute{
-				Computed:    true,
-				Description: "Route ID.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.UseStateForUnknown(),
-				},
-			},
-			"name": schema.StringAttribute{
-				Required:    true,
-				Description: "Route name.",
-			},
-			"service_id": schema.StringAttribute{
-				Required:    true,
-				Description: "ID of the parent service.",
-				PlanModifiers: []planmodifier.String{
-					stringplanmodifier.RequiresReplace(),
-				},
-			},
-			"paths": schema.ListAttribute{
-				Required:    true,
-				ElementType: types.StringType,
-				Description: `URI paths to match, e.g. ["/api/v1/*"].`,
-			},
-			"methods": schema.ListAttribute{
-				Optional:    true,
-				Computed:    true,
-				ElementType: types.StringType,
-				Description: `HTTP methods to match, e.g. ["GET", "POST"]. Empty means all.`,
-			},
-			"plugins": schema.StringAttribute{
-				Optional:    true,
-				Computed:    true,
-				Description: "Plugin configuration as JSON string.",
-				CustomType:  jsontypes.NormalizedType{},
-			},
-			"labels": schema.MapAttribute{
-				Optional:    true,
-				ElementType: types.StringType,
-				Description: "Key-value label pairs attached to the route.",
-			},
+// Schema uses the generated schema (with auto-derived validators) and overrides
+// the plugins attribute to jsontypes.Normalized for free-form JSON support.
+// Internal query-param fields (gateway_group_id, with_publish_info) are removed.
+func (r *RouteResource) Schema(ctx context.Context, _ resource.SchemaRequest, resp *resource.SchemaResponse) {
+	s := gen.RouteResourceSchema(ctx)
+	s.Description = "Manages an API7 Route."
+
+	// Override plugins: generated schema has empty SingleNested, we need free-form JSON.
+	s.Attributes["plugins"] = schema.StringAttribute{
+		Optional:    true,
+		Computed:    true,
+		CustomType:  jsontypes.NormalizedType{},
+		Description: "Plugin configuration as JSON string, e.g. jsonencode({\"key-auth\"={}}).",
+	}
+
+	// id should not be set by the user; use state for unknown to avoid needless diffs.
+	s.Attributes["id"] = schema.StringAttribute{
+		Computed:    true,
+		Description: "Route ID (assigned by API7).",
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
 		},
 	}
+
+	// Remove internal query-param fields that are not resource attributes.
+	delete(s.Attributes, "gateway_group_id")
+	delete(s.Attributes, "with_publish_info")
+
+	resp.Schema = s
 }
 
 func (r *RouteResource) Configure(_ context.Context, req resource.ConfigureRequest, resp *resource.ConfigureResponse) {
@@ -109,7 +102,7 @@ func (r *RouteResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	body := routeModelToCreateRequest(plan)
+	body := routeModelToCreateRequest(ctx, plan)
 	params := &client.CreatePublishedServiceRouteParams{GatewayGroupId: r.gatewayGroupID}
 
 	apiResp, err := r.client.CreatePublishedServiceRouteWithResponse(ctx, params, body)
@@ -123,7 +116,8 @@ func (r *RouteResource) Create(ctx context.Context, req resource.CreateRequest, 
 		return
 	}
 
-	state := buildRouteModelFromResponse(apiResp.JSON200.Value)
+	state, diags := buildRouteModelFromResponse(ctx, apiResp.JSON200.Value)
+	resp.Diagnostics.Append(diags...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -134,10 +128,8 @@ func (r *RouteResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	routeID := state.ID.ValueString()
 	params := &client.GetPublishedServiceRouteParams{GatewayGroupId: r.gatewayGroupID}
-
-	apiResp, err := r.client.GetPublishedServiceRouteWithResponse(ctx, routeID, params)
+	apiResp, err := r.client.GetPublishedServiceRouteWithResponse(ctx, state.Id.ValueString(), params)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to read route", err.Error())
 		return
@@ -152,7 +144,8 @@ func (r *RouteResource) Read(ctx context.Context, req resource.ReadRequest, resp
 		return
 	}
 
-	newState := buildRouteModelFromResponse(apiResp.JSON200.Value)
+	newState, diags := buildRouteModelFromResponse(ctx, apiResp.JSON200.Value)
+	resp.Diagnostics.Append(diags...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -163,11 +156,10 @@ func (r *RouteResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	routeID := plan.ID.ValueString()
-	body := routeModelToPutRequest(plan)
+	body := routeModelToPutRequest(ctx, plan)
 	params := &client.PutPublishedServiceRouteParams{GatewayGroupId: r.gatewayGroupID}
 
-	apiResp, err := r.client.PutPublishedServiceRouteWithResponse(ctx, routeID, params, body)
+	apiResp, err := r.client.PutPublishedServiceRouteWithResponse(ctx, plan.Id.ValueString(), params, body)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to update route", err.Error())
 		return
@@ -178,7 +170,8 @@ func (r *RouteResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 
-	newState := buildRouteModelFromResponse(apiResp.JSON200.Value)
+	newState, diags := buildRouteModelFromResponse(ctx, apiResp.JSON200.Value)
+	resp.Diagnostics.Append(diags...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -189,10 +182,8 @@ func (r *RouteResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 		return
 	}
 
-	routeID := state.ID.ValueString()
 	params := &client.DeletePublishedServiceRouteParams{GatewayGroupId: r.gatewayGroupID}
-
-	apiResp, err := r.client.DeletePublishedServiceRouteWithResponse(ctx, routeID, params)
+	apiResp, err := r.client.DeletePublishedServiceRouteWithResponse(ctx, state.Id.ValueString(), params)
 	if err != nil {
 		resp.Diagnostics.AddError("Failed to delete route", err.Error())
 		return
@@ -209,23 +200,23 @@ func (r *RouteResource) ImportState(ctx context.Context, req resource.ImportStat
 
 // --- helpers ---
 
-func routeModelToCreateRequest(m RouteResourceModel) client.CreatePublishedServiceRouteJSONRequestBody {
+func routeModelToCreateRequest(ctx context.Context, m RouteResourceModel) client.CreatePublishedServiceRouteJSONRequestBody {
 	body := client.CreatePublishedServiceRouteJSONRequestBody{
-		ServiceId: m.ServiceID.ValueString(),
+		ServiceId: m.ServiceId.ValueString(),
 	}
 	name := m.Name.ValueString()
 	body.Name = &name
 
-	paths := make([]string, 0, len(m.Paths))
-	for _, p := range m.Paths {
-		paths = append(paths, p.ValueString())
-	}
+	var paths []string
+	m.Paths.ElementsAs(ctx, &paths, false)
 	body.Paths = &paths
 
-	if len(m.Methods) > 0 {
-		methods := make([]client.CreatePublishedServiceRouteJSONBodyMethods, 0, len(m.Methods))
-		for _, method := range m.Methods {
-			methods = append(methods, client.CreatePublishedServiceRouteJSONBodyMethods(method.ValueString()))
+	if !m.Methods.IsNull() && !m.Methods.IsUnknown() {
+		var methodStrs []string
+		m.Methods.ElementsAs(ctx, &methodStrs, false)
+		methods := make([]client.CreatePublishedServiceRouteJSONBodyMethods, len(methodStrs))
+		for i, s := range methodStrs {
+			methods[i] = client.CreatePublishedServiceRouteJSONBodyMethods(s)
 		}
 		body.Methods = &methods
 	}
@@ -236,32 +227,32 @@ func routeModelToCreateRequest(m RouteResourceModel) client.CreatePublishedServi
 		body.Plugins = &plugins
 	}
 
-	labels := make(map[string]string, len(m.Labels))
-	for k, v := range m.Labels {
-		labels[k] = v.ValueString()
+	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
+		var labels map[string]string
+		m.Labels.ElementsAs(ctx, &labels, false)
+		body.Labels = &labels
 	}
-	body.Labels = &labels
 
 	return body
 }
 
-func routeModelToPutRequest(m RouteResourceModel) client.PutPublishedServiceRouteJSONRequestBody {
+func routeModelToPutRequest(ctx context.Context, m RouteResourceModel) client.PutPublishedServiceRouteJSONRequestBody {
 	body := client.PutPublishedServiceRouteJSONRequestBody{
-		ServiceId: m.ServiceID.ValueString(),
+		ServiceId: m.ServiceId.ValueString(),
 	}
 	name := m.Name.ValueString()
 	body.Name = &name
 
-	paths := make([]string, 0, len(m.Paths))
-	for _, p := range m.Paths {
-		paths = append(paths, p.ValueString())
-	}
+	var paths []string
+	m.Paths.ElementsAs(ctx, &paths, false)
 	body.Paths = &paths
 
-	if len(m.Methods) > 0 {
-		methods := make([]client.PutPublishedServiceRouteJSONBodyMethods, 0, len(m.Methods))
-		for _, method := range m.Methods {
-			methods = append(methods, client.PutPublishedServiceRouteJSONBodyMethods(method.ValueString()))
+	if !m.Methods.IsNull() && !m.Methods.IsUnknown() {
+		var methodStrs []string
+		m.Methods.ElementsAs(ctx, &methodStrs, false)
+		methods := make([]client.PutPublishedServiceRouteJSONBodyMethods, len(methodStrs))
+		for i, s := range methodStrs {
+			methods[i] = client.PutPublishedServiceRouteJSONBodyMethods(s)
 		}
 		body.Methods = &methods
 	}
@@ -272,64 +263,104 @@ func routeModelToPutRequest(m RouteResourceModel) client.PutPublishedServiceRout
 		body.Plugins = &plugins
 	}
 
-	labels := make(map[string]string, len(m.Labels))
-	for k, v := range m.Labels {
-		labels[k] = v.ValueString()
+	if !m.Labels.IsNull() && !m.Labels.IsUnknown() {
+		var labels map[string]string
+		m.Labels.ElementsAs(ctx, &labels, false)
+		body.Labels = &labels
 	}
-	body.Labels = &labels
 
 	return body
 }
 
-// buildRouteModelFromResponse uses JSON re-encoding to avoid dealing with anonymous struct types.
-func buildRouteModelFromResponse(val interface{}) RouteResourceModel {
+func buildRouteModelFromResponse(ctx context.Context, val interface{}) (RouteResourceModel, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	// Use JSON round-trip to avoid dealing with anonymous struct types from oapi-codegen.
 	raw, _ := json.Marshal(val)
 	var m map[string]interface{}
 	_ = json.Unmarshal(raw, &m)
 
 	state := RouteResourceModel{
 		Plugins: jsontypes.NewNormalizedNull(),
+		Labels:  types.MapValueMust(types.StringType, map[string]attr.Value{}),
+		Methods: types.ListValueMust(types.StringType, []attr.Value{}),
+		Paths:   types.ListValueMust(types.StringType, []attr.Value{}),
+		Timeout: gen.NewTimeoutValueNull(),
 	}
 
 	if id, ok := m["id"].(string); ok {
-		state.ID = types.StringValue(id)
+		state.Id = types.StringValue(id)
 	}
 	if name, ok := m["name"].(string); ok {
 		state.Name = types.StringValue(name)
 	}
 	if serviceID, ok := m["service_id"].(string); ok {
-		state.ServiceID = types.StringValue(serviceID)
+		state.ServiceId = types.StringValue(serviceID)
+	}
+	if desc, ok := m["desc"].(string); ok {
+		state.Desc = types.StringValue(desc)
+	}
+	if ws, ok := m["enable_websocket"].(bool); ok {
+		state.EnableWebsocket = types.BoolValue(ws)
+	}
+	if p, ok := m["priority"].(float64); ok {
+		state.Priority = types.Int64Value(int64(p))
 	}
 
+	// paths
 	if pathsRaw, ok := m["paths"].([]interface{}); ok {
+		elems := make([]attr.Value, 0, len(pathsRaw))
 		for _, p := range pathsRaw {
 			if s, ok := p.(string); ok {
-				state.Paths = append(state.Paths, types.StringValue(s))
+				elems = append(elems, types.StringValue(s))
 			}
 		}
+		state.Paths = types.ListValueMust(types.StringType, elems)
 	}
 
+	// methods
 	if methodsRaw, ok := m["methods"].([]interface{}); ok {
+		elems := make([]attr.Value, 0, len(methodsRaw))
 		for _, method := range methodsRaw {
 			if s, ok := method.(string); ok {
-				state.Methods = append(state.Methods, types.StringValue(s))
+				elems = append(elems, types.StringValue(s))
 			}
 		}
+		state.Methods = types.ListValueMust(types.StringType, elems)
 	}
 
+	// plugins
 	if pluginsRaw, ok := m["plugins"]; ok && pluginsRaw != nil {
 		b, _ := json.Marshal(pluginsRaw)
 		state.Plugins = jsontypes.NewNormalizedValue(string(b))
 	}
 
+	// labels
 	if labelsRaw, ok := m["labels"].(map[string]interface{}); ok && len(labelsRaw) > 0 {
-		state.Labels = make(map[string]types.String, len(labelsRaw))
+		elems := make(map[string]attr.Value, len(labelsRaw))
 		for k, v := range labelsRaw {
 			if s, ok := v.(string); ok {
-				state.Labels[k] = types.StringValue(s)
+				elems[k] = types.StringValue(s)
 			}
 		}
+		state.Labels = types.MapValueMust(types.StringType, elems)
 	}
 
-	return state
+	// timeout
+	if timeoutRaw, ok := m["timeout"].(map[string]interface{}); ok {
+		connect := types.Int64Value(int64(timeoutRaw["connect"].(float64)))
+		send := types.Int64Value(int64(timeoutRaw["send"].(float64)))
+		read := types.Int64Value(int64(timeoutRaw["read"].(float64)))
+		tv, d := gen.NewTimeoutValue(
+			gen.TimeoutValue{}.AttributeTypes(ctx),
+			map[string]attr.Value{
+				"connect": connect,
+				"send":    send,
+				"read":    read,
+			},
+		)
+		diags.Append(d...)
+		state.Timeout = tv
+	}
+
+	return state, diags
 }
