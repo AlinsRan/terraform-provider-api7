@@ -130,8 +130,10 @@ func (r *ServiceResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 		Description: "Service type. Currently only \"http\" is supported.",
 	}
 
-	// Remove internal query-param fields that are not resource attributes.
+	// Remove internal query-param fields and response-only fields not in our model.
 	delete(s.Attributes, "gateway_group_id")
+	delete(s.Attributes, "value")
+	delete(s.Attributes, "with_publish_info")
 
 	resp.Schema = s
 }
@@ -174,7 +176,7 @@ func (r *ServiceResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	state := buildServiceModelFromResponse(apiResp.JSON200.Value, &plan)
+	state := buildServiceModelFromRawBody(apiResp.Body, &plan)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -204,7 +206,7 @@ func (r *ServiceResource) Read(ctx context.Context, req resource.ReadRequest, re
 	}
 
 	// The API response does not include upstream; preserve it from current state.
-	newState := buildServiceModelFromResponse(apiResp.JSON200.Value, &state)
+	newState := buildServiceModelFromRawBody(apiResp.Body, &state)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -234,7 +236,7 @@ func (r *ServiceResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	newState := buildServiceModelFromResponse(apiResp.JSON200.Value, &plan)
+	newState := buildServiceModelFromRawBody(apiResp.Body, &plan)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
 }
 
@@ -325,6 +327,16 @@ func buildServiceRequestBody(m ServiceResourceModel) ([]byte, error) {
 	}
 
 	return json.Marshal(body)
+}
+
+// buildServiceModelFromRawBody parses the raw API response body (which wraps the service
+// under a "value" key) and builds the Terraform state. The upstream field is not returned
+// by the API, so it is preserved from prevModel.
+func buildServiceModelFromRawBody(body []byte, prevModel *ServiceResourceModel) ServiceResourceModel {
+	var wrapper map[string]interface{}
+	_ = json.Unmarshal(body, &wrapper)
+	val, _ := wrapper["value"]
+	return buildServiceModelFromResponse(val, prevModel)
 }
 
 // buildServiceModelFromResponse builds the Terraform state from the API response value.
